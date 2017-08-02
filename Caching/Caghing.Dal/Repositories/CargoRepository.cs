@@ -8,18 +8,13 @@ using Caghing.Dal.Interfaces;
 
 namespace Caghing.Dal.Repositories
 {
-    public class CargoRepository : ICargoRepository, IDisposable
+    public class CargoRepository : ICargoRepository
     {
-        private ShipmentContext _context;
+        private readonly ShipmentContext _context;
 
         public CargoRepository(ShipmentContext context)
         {
             _context = context;
-        }
-
-        public IEnumerable<Cargo> GetAll()
-        {
-            return _context.Cargo.ToList();
         }
 
         public Cargo GetById(int id)
@@ -30,30 +25,7 @@ namespace Caghing.Dal.Repositories
         public void Create(Cargo item)
         {
             _context.Cargo.Add(item);
-        }
-
-        public void Delete(int id)
-        {
-            var item = _context.Cargo.Find(id);
-            if (item == null) return;
-            _context.Cargo.Remove(item);
-        }
-
-        public void Update(Cargo item)
-        {
-            _context.Entry(item).State = EntityState.Modified;
-        }
-
-        public void Save()
-        {
             _context.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            if (_context == null) return;
-            _context.Dispose();
-            _context = null;
         }
     }
 }

@@ -7,12 +7,12 @@ using Caghing.Dal.Interfaces;
 
 namespace Caching.Controllers
 {
-    [RoutePrefix("api/database/cargoes")]
-    public class CargosController : ApiController
+    [RoutePrefix("api/cache/cargoes")]
+    public class CargoesCachingController : ApiController
     {
-        private readonly ICargoRepository _repositoryCargo;
+        private readonly ICargoCachedRepository _repositoryCargo;
 
-        public CargosController(ICargoRepository repository)
+        public CargoesCachingController(ICargoCachedRepository repository)
         {
             _repositoryCargo = repository;
         }

@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Caching", "Caching\Caching.csproj", "{51C807C1-2142-4B96-8385-BB6EACC9E6A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Caghing.Dal", "Caghing.Dal\Caghing.Dal.csproj", "{DBA4B219-B1EC-468F-B432-F7CD19180AF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Caching.Dal", "Caghing.Dal\Caching.Dal.csproj", "{DBA4B219-B1EC-468F-B432-F7CD19180AF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
