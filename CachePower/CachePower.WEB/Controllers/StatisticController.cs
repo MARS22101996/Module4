@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using AutoMapper;
-using CachePower.DAL.Entities;
-using CachePower.DAL.Interfaces;
-using CachePower.WEB.Models;
+using Cache.DAL.Interfaces;
+using Cache.WEB.Models;
+using Cache.DAL.Entities;
 using StackExchange.Redis;
 
-namespace CachePower.WEB.Controllers
+namespace Cache.WEB.Controllers
 {
     [RoutePrefix("api/cargostatistic")]
     public class StatisticController : ApiController
@@ -45,6 +45,7 @@ namespace CachePower.WEB.Controllers
         public IHttpActionResult GetLast(int number)
         {
             var cachedCargoes = _cacheCargoRepository.GetAll();
+
             var cargoes = cachedCargoes
                 .OrderByDescending(cargo => cargo.LastAccessed)
                 .Select(cargo => cargo.Entity)

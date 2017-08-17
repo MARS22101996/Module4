@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Web.Http;
 using AutoMapper;
-using CachePower.DAL.Entities;
-using CachePower.DAL.Interfaces;
-using CachePower.WEB.Models;
+using Cache.DAL.Entities;
+using Cache.DAL.Interfaces;
+using Cache.WEB.Models;
 
-namespace CachePower.WEB.Controllers
+namespace Cache.WEB.Controllers
 {
     [RoutePrefix("api/caching/cargoes")]
     public class CachedController : ApiController

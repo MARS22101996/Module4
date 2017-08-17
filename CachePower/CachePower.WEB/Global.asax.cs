@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace CachePower.WEB
+namespace Cache.WEB
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

@@ -1,6 +1,6 @@
-﻿using CachePower.DAL.Interfaces;
+﻿using Cache.DAL.Interfaces;
 
-namespace CachePower.WEB.Settings
+namespace Cache.WEB.Settings
 {
     public class CacheSettings : ICacheSettings
     {

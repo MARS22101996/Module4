@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CachePower.DAL.Entities
+namespace Cache.DAL.Entities
 {
     public class CachedCargo
     {

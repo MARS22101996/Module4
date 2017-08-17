@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using CachePower.DAL.Entities;
+using Cache.DAL.Entities;
 
-namespace CachePower.DAL.Interfaces
+namespace Cache.DAL.Interfaces
 {
     public interface ICacheCargoRepository
     {

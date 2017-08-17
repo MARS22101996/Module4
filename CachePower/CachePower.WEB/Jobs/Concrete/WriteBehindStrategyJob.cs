@@ -1,9 +1,9 @@
 ﻿using System.Web.Http;
-using CachePower.DAL.Entities;
-using CachePower.DAL.Interfaces;
-using CachePower.WEB.Interfaces;
+using Cache.DAL.Interfaces;
+using Cache.WEB.Interfaces;
+using Cache.DAL.Entities;
 
-namespace CachePower.WEB.Schedulers.Jobs
+namespace Cache.WEB.Schedulers.Jobs
 {
     public class WriteBehindStrategyJob : IJob
     {

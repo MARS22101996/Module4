@@ -1,4 +1,4 @@
-﻿namespace CachePower.DAL.Interfaces
+﻿namespace Cache.DAL.Interfaces
 {
     public interface ICacheSettings
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CachePower.WEB.Models
+namespace Cache.WEB.Models
 {
     public class CargoModel
     {

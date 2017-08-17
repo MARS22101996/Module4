@@ -6,18 +6,18 @@ using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
 using AutoMapper;
-using CachePower.DAL;
-using CachePower.DAL.Context;
-using CachePower.DAL.Interfaces;
-using CachePower.DAL.Repositories;
-using CachePower.WEB.Interfaces;
-using CachePower.WEB.MapperProfiles;
-using CachePower.WEB.Schedulers;
-using CachePower.WEB.Schedulers.Jobs;
-using CachePower.WEB.Settings;
+using Cache.DAL.Context;
+using Cache.DAL.Interfaces;
+using Cache.DAL.Repositories;
+using Cache.WEB.Interfaces;
+using Cache.WEB.MapperProfiles;
+using Cache.WEB.Schedulers;
+using Cache.WEB.Schedulers.Jobs;
+using Cache.WEB.Settings;
+using Cache.DAL;
 using StackExchange.Redis;
 
-namespace CachePower.WEB
+namespace Cache.WEB
 {
     public class ConfigDI
     {

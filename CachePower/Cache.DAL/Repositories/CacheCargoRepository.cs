@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CachePower.DAL.Entities;
-using CachePower.DAL.Exceptions;
-using CachePower.DAL.Interfaces;
+using Cache.DAL.Entities;
+using Cache.DAL.Exceptions;
+using Cache.DAL.Interfaces;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
-namespace CachePower.DAL.Repositories
+namespace Cache.DAL.Repositories
 {
     public class CacheCargoRepository : ICacheCargoRepository
     {

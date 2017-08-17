@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CachePower.DAL.Exceptions
+namespace Cache.DAL.Exceptions
 {
     public class ServiceException : Exception
     {

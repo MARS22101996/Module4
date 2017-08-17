@@ -1,8 +1,8 @@
-﻿using CachePower.DAL.Context;
-using CachePower.DAL.Entities;
-using CachePower.DAL.Interfaces;
+﻿using Cache.DAL.Context;
+using Cache.DAL.Entities;
+using Cache.DAL.Interfaces;
 
-namespace CachePower.DAL.Repositories
+namespace Cache.DAL.Repositories
 {
     public class CargoRepository : IRepository
     {

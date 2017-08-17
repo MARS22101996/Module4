@@ -1,6 +1,6 @@
-﻿using CachePower.DAL.Entities;
+﻿using Cache.DAL.Entities;
 
-namespace CachePower.DAL.Interfaces
+namespace Cache.DAL.Interfaces
 {
     public interface IRepository
     {

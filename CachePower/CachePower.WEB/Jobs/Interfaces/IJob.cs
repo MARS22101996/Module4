@@ -1,4 +1,4 @@
-﻿namespace CachePower.WEB.Interfaces
+﻿namespace Cache.WEB.Interfaces
 {
     public interface IJob
     {

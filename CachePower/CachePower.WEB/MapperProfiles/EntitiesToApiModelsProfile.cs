@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using CachePower.DAL.Entities;
-using CachePower.WEB.Models;
+using Cache.DAL.Entities;
+using Cache.WEB.Models;
 
-namespace CachePower.WEB.MapperProfiles
+namespace Cache.WEB.MapperProfiles
 {
     public class EntitiesToApiModelsProfile : Profile
     {

@@ -1,12 +1,12 @@
-﻿using CachePower.WEB;
-using CachePower.WEB.Interfaces;
+﻿using Cache.WEB.Interfaces;
+using Cache.WEB;
 using Hangfire;
 using Microsoft.Owin;
 using Owin;
 using GlobalConfiguration = System.Web.Http.GlobalConfiguration;
 
 [assembly: OwinStartup(typeof(Startup))]
-namespace CachePower.WEB
+namespace Cache.WEB
 {
     public class Startup
     {

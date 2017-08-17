@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CachePower.DAL.Interfaces;
-using CachePower.WEB.Interfaces;
+using Cache.DAL.Interfaces;
+using Cache.WEB.Interfaces;
 
-namespace CachePower.WEB
+namespace Cache.WEB
 {
     public class SchedulerCreater : ISchedulerConfigurer
     {

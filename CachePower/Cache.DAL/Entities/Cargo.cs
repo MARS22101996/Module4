@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CachePower.DAL.Entities
+namespace Cache.DAL.Entities
 {
     [Table("Cargo")]
     public partial class Cargo
