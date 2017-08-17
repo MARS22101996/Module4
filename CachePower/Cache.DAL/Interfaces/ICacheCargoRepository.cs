@@ -5,9 +5,9 @@ namespace CachePower.DAL.Interfaces
 {
     public interface ICacheCargoRepository
     {
-        void Set(Cargo entity);
+        void Configure(Cargo entity);
 
-        CachedCargo Get(int id);
+        CachedCargo GetById(int id);
 
         IEnumerable<CachedCargo> PopAllCreated();
 

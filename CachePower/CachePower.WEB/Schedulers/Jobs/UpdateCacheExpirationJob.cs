@@ -22,7 +22,7 @@ namespace CachePower.WEB.Schedulers.Jobs
             {
                 if (cargo.AccessCount >= _settings.AccessCountEnoughForUpdateExpiration)
                 {
-                    _cacheCargoRepository.Set(cargo.Entity);
+                    _cacheCargoRepository.Configure(cargo.Entity);
                 }
             }
         }

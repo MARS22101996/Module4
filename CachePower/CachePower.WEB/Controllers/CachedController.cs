@@ -30,7 +30,7 @@ namespace CachePower.WEB.Controllers
         {
             var id = GetBetweenIds(500, 700);
 
-            var cargoCached = _cacheCargoRepository.Get(id);
+            var cargoCached = _cacheCargoRepository.GetById(id);
 
 	        Cargo cargo = null;
 
@@ -48,7 +48,7 @@ namespace CachePower.WEB.Controllers
                     return NotFound();
                 }
 
-                _cacheCargoRepository.Set(cargo);
+                _cacheCargoRepository.Configure(cargo);
             }
 
             var cargoApiModel = _mapper.Map<CargoApiModel>(cargo);

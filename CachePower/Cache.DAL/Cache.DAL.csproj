@@ -59,7 +59,7 @@
     <Compile Include="Entities\BaseType.cs" />
     <Compile Include="Entities\CachedCargo.cs" />
     <Compile Include="Entities\Cargo.cs" />
-    <Compile Include="Exceptions\CacheException.cs" />
+    <Compile Include="Exceptions\ServiceException.cs" />
     <Compile Include="Interfaces\ICacheCargoRepository.cs" />
     <Compile Include="Interfaces\ICacheSettings.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
