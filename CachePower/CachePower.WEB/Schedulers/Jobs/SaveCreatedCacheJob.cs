@@ -5,12 +5,12 @@ using CachePower.WEB.Interfaces;
 
 namespace CachePower.WEB.Schedulers.Jobs
 {
-    public class SaveCreatedCacheJob<TEntity> : IJob where TEntity : BaseType, new()
+    public class SaveCreatedCacheJob : IJob
     {
-        private readonly ICacheRepository<TEntity> _cacheRepository = (ICacheRepository<TEntity>)GlobalConfiguration
-            .Configuration.DependencyResolver.GetService(typeof(ICacheRepository<TEntity>));
-        private readonly IRepository<TEntity> _repository = (IRepository<TEntity>)GlobalConfiguration.Configuration
-            .DependencyResolver.GetService(typeof(IRepository<TEntity>));
+        private readonly ICacheRepository _cacheRepository = (ICacheRepository)GlobalConfiguration
+            .Configuration.DependencyResolver.GetService(typeof(ICacheRepository));
+        private readonly IRepository _repository = (IRepository)GlobalConfiguration.Configuration
+            .DependencyResolver.GetService(typeof(IRepository));
 
         public string JobName => "Save_To_Database";
 

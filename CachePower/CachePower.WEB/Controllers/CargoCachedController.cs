@@ -4,48 +4,24 @@ using AutoMapper;
 using CachePower.DAL.Entities;
 using CachePower.DAL.Interfaces;
 using CachePower.WEB.Models;
-using Caghing.Dal.Entities;
 
 namespace CachePower.WEB.Controllers
 {
     [RoutePrefix("api/usecache/cargoes")]
     public class CargoCachedController : ApiController
     {
-        private readonly IRepository<Cargo> _repository;
-        private readonly ICacheRepository<Cargo> _cacheRepository;
+        private readonly IRepository _repository;
+        private readonly ICacheRepository _cacheRepository;
         private readonly IMapper _mapper;
 
         public CargoCachedController(
-            IRepository<Cargo> repository,
-            ICacheRepository<Cargo> cacheRepository,
+            IRepository repository,
+            ICacheRepository cacheRepository,
             IMapper mapper)
         {
             _repository = repository;
             _cacheRepository = cacheRepository;
             _mapper = mapper;
-        }
-
-        [HttpGet]
-        [Route("{id}")]
-        public IHttpActionResult Get(int id)
-        {
-            var cargo = _cacheRepository.Get(id)?.Entity;
-
-            if (cargo == null)
-            {
-                cargo = _repository.Get(id);
-
-                if (cargo == null)
-                {
-                    return NotFound();
-                }
-
-                _cacheRepository.Set(cargo);
-            }
-
-            var cargoApiModel = _mapper.Map<CargoApiModel>(cargo);
-
-            return Ok(cargoApiModel);
         }
 
         [HttpGet]

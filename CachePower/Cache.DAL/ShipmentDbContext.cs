@@ -1,6 +1,5 @@
 using System.Data.Entity;
 using CachePower.DAL.Entities;
-using Caghing.Dal.Entities;
 
 namespace CachePower.DAL
 {

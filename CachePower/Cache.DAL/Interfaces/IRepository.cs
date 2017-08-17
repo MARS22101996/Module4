@@ -2,10 +2,10 @@
 
 namespace CachePower.DAL.Interfaces
 {
-    public interface IRepository<T> where T : BaseType 
+    public interface IRepository
     {
-        T Get(int id);
+        Cargo Get(int id);
 
-        void Create(T item);
+        void Create(Cargo item);
     }
 }

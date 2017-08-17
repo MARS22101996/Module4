@@ -5,10 +5,10 @@ using CachePower.WEB.Interfaces;
 
 namespace CachePower.WEB.Schedulers.Jobs
 {
-    public class UpdateCacheExpirationJob<TEntity> : IJob where TEntity : BaseType, new()
+    public class UpdateCacheExpirationJob : IJob 
     {
-        private readonly ICacheRepository<TEntity> _cacheRepository = (ICacheRepository<TEntity>)GlobalConfiguration
-            .Configuration.DependencyResolver.GetService(typeof(ICacheRepository<TEntity>));
+        private readonly ICacheRepository _cacheRepository = (ICacheRepository)GlobalConfiguration
+            .Configuration.DependencyResolver.GetService(typeof(ICacheRepository));
         private readonly ICacheSettings _settings = (ICacheSettings)GlobalConfiguration.Configuration
             .DependencyResolver.GetService(typeof(ICacheSettings));
 

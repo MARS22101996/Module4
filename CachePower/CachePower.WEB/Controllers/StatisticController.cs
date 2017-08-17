@@ -6,7 +6,6 @@ using AutoMapper;
 using CachePower.DAL.Entities;
 using CachePower.DAL.Interfaces;
 using CachePower.WEB.Models;
-using Caghing.Dal.Entities;
 using StackExchange.Redis;
 
 namespace CachePower.WEB.Controllers
@@ -14,11 +13,11 @@ namespace CachePower.WEB.Controllers
     [RoutePrefix("api/statistic")]
     public class StatisticController : ApiController
     {
-        private readonly ICacheRepository<Cargo> _cacheRepository;
+        private readonly ICacheRepository _cacheRepository;
         private readonly IServer _redisServer;
         private readonly IMapper _mapper;
 
-        public StatisticController(IServer redisServer, ICacheRepository<Cargo> cacheRepository, IMapper mapper)
+        public StatisticController(IServer redisServer, ICacheRepository cacheRepository, IMapper mapper)
         {
             _redisServer = redisServer;
             _cacheRepository = cacheRepository;

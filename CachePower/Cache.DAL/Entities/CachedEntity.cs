@@ -2,9 +2,9 @@
 
 namespace CachePower.DAL.Entities
 {
-    public class CachedEntity<TEntity> where TEntity : BaseType
+    public class CachedEntity
     {
-        public TEntity Entity { get; set; }
+        public Cargo Entity { get; set; }
 
         public int AccessCount { get; set; }
 

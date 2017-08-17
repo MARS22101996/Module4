@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using CachePower.DAL.Entities;
 
-namespace Caghing.Dal.Entities
+namespace CachePower.DAL.Entities
 {
     [Table("Cargo")]
-    public partial class Cargo: BaseType
+    public partial class Cargo
     {
-        [Required]
+		public int Id { get; set; }
+
+		[Required]
         [StringLength(50)]
         public string CargoName { get; set; }
 

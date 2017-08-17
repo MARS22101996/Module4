@@ -1,10 +1,9 @@
 ﻿using CachePower.DAL.Entities;
 using CachePower.DAL.Interfaces;
-using Caghing.Dal.Entities;
 
 namespace CachePower.DAL.Repositories
 {
-    public class CargoRepository : IRepository<Cargo>
+    public class CargoRepository : IRepository
     {
         private readonly ShipmentDbContext _context;
 

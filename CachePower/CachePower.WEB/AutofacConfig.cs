@@ -7,7 +7,6 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using AutoMapper;
 using CachePower.DAL;
-using CachePower.DAL.Entities;
 using CachePower.DAL.Interfaces;
 using CachePower.DAL.Repositories;
 using CachePower.WEB.Configuration;
@@ -15,7 +14,6 @@ using CachePower.WEB.Interfaces;
 using CachePower.WEB.MapperProfiles;
 using CachePower.WEB.Schedulers;
 using CachePower.WEB.Schedulers.Jobs;
-using Caghing.Dal.Entities;
 using StackExchange.Redis;
 
 namespace CachePower.WEB
@@ -55,8 +53,8 @@ namespace CachePower.WEB
 
         private static void RegisterJobs(ContainerBuilder builder)
         {
-            builder.RegisterType<SaveCreatedCacheJob<Cargo>>().As<IJob>().InstancePerLifetimeScope();
-            builder.RegisterType<UpdateCacheExpirationJob<Cargo>>().As<IJob>().InstancePerLifetimeScope();
+            builder.RegisterType<SaveCreatedCacheJob>().As<IJob>().InstancePerLifetimeScope();
+            builder.RegisterType<UpdateCacheExpirationJob>().As<IJob>().InstancePerLifetimeScope();
         }
 
         private static void RegisterScheduler(ContainerBuilder builder)
@@ -78,8 +76,8 @@ namespace CachePower.WEB
         private static void RegisterRepositories(ContainerBuilder builder)
         {
             builder.RegisterType<ShipmentDbContext>().As<ShipmentDbContext>().InstancePerLifetimeScope();
-            builder.RegisterType<CargoRepository>().As<IRepository<Cargo>>().InstancePerLifetimeScope();
-            builder.RegisterType<CacheRepository<Cargo>>().As<ICacheRepository<Cargo>>().InstancePerLifetimeScope();
+            builder.RegisterType<CargoRepository>().As<IRepository>().InstancePerLifetimeScope();
+            builder.RegisterType<CacheRepository>().As<ICacheRepository>().InstancePerLifetimeScope();
         }
 
         private static void RegisterMapper(ContainerBuilder builder)
