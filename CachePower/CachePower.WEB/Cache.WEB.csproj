@@ -173,7 +173,7 @@
     <Compile Include="Jobs\Concrete\RefreshAheadStrategyJob.cs" />
     <Compile Include="Jobs\Interfaces\IJob.cs" />
     <Compile Include="Jobs\Interfaces\IScheduler.cs" />
-    <Compile Include="Jobs\Interfaces\ISchedulerInitializer.cs" />
+    <Compile Include="Jobs\Interfaces\ISchedulerConfigurer.cs" />
     <Compile Include="MapperProfiles\ApiModelsToEntitiesProfile.cs" />
     <Compile Include="MapperProfiles\EntitiesToApiModelsProfile.cs" />
     <Compile Include="Controllers\SimpleController.cs" />
@@ -183,7 +183,7 @@
     <Compile Include="Models\RatioModel.cs" />
     <Compile Include="Models\CargoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Jobs\HangfireScheduler.cs" />
+    <Compile Include="Jobs\Scheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

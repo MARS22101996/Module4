@@ -56,7 +56,6 @@
   <ItemGroup>
     <Compile Include="AppDbConfiguration.cs" />
     <Compile Include="Context\ShipmentContext.cs" />
-    <Compile Include="Entities\BaseType.cs" />
     <Compile Include="Entities\CachedCargo.cs" />
     <Compile Include="Entities\Cargo.cs" />
     <Compile Include="Exceptions\ServiceException.cs" />

@@ -1,7 +1,7 @@
 using System.Data.Entity;
 using CachePower.DAL.Entities;
 
-namespace Caghing.Dal.Context
+namespace CachePower.DAL.Context
 {
     public partial class ShipmentContext : DbContext
     {

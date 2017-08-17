@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using CachePower.DAL.Interfaces;
 using CachePower.WEB.Interfaces;
 
 namespace CachePower.WEB
 {
-    public class SchedulerCreater : ISchedulerInitializer
+    public class SchedulerCreater : ISchedulerConfigurer
     {
         private readonly IScheduler _scheduler;
         private readonly ICacheSettings _settings;
@@ -33,9 +32,7 @@ namespace CachePower.WEB
 
 		    var job = _jobs.First(j => j.Name.Equals("WriteBehindStrategy_Job"));
 
-		    _scheduler.Delete(job.Name);
-
-		    _scheduler.Add(job.Name, () => job.Run(), TimeSpan.FromMinutes(_settings.WriteBehindSyncInterval));
+		    _scheduler.Act(job.Name, () => job.Run(), TimeSpan.FromMinutes(_settings.WriteBehindSyncInterval));
 	    }
 
 	    private void CheckIfUseRefreshAheadStrategy()
@@ -44,9 +41,7 @@ namespace CachePower.WEB
 
 		    var job = _jobs.First(j => j.Name.Equals("RefreshAheadStrategy"));
 
-		    _scheduler.Delete(job.Name);
-
-		    _scheduler.Add(job.Name, () => job.Run(), TimeSpan.FromMinutes(_settings.UpdateExpirationInterval));
+		    _scheduler.Act(job.Name, () => job.Run(), TimeSpan.FromMinutes(_settings.UpdateExpirationInterval));
 	    }
 	}
 }

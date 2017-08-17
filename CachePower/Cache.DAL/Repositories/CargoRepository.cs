@@ -1,6 +1,6 @@
-﻿using CachePower.DAL.Entities;
+﻿using CachePower.DAL.Context;
+using CachePower.DAL.Entities;
 using CachePower.DAL.Interfaces;
-using Caghing.Dal.Context;
 
 namespace CachePower.DAL.Repositories
 {

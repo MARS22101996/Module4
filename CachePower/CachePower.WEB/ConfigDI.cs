@@ -7,14 +7,14 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using AutoMapper;
 using CachePower.DAL;
+using CachePower.DAL.Context;
 using CachePower.DAL.Interfaces;
 using CachePower.DAL.Repositories;
-using CachePower.WEB.Configuration;
 using CachePower.WEB.Interfaces;
 using CachePower.WEB.MapperProfiles;
 using CachePower.WEB.Schedulers;
 using CachePower.WEB.Schedulers.Jobs;
-using Caghing.Dal.Context;
+using CachePower.WEB.Settings;
 using StackExchange.Redis;
 
 namespace CachePower.WEB
@@ -45,9 +45,9 @@ namespace CachePower.WEB
 
 	        builder.RegisterType<RefreshAheadStrategyJob>().As<IJob>().InstancePerLifetimeScope();
 
-	        builder.RegisterType<HangfireScheduler>().As<IScheduler>().InstancePerLifetimeScope();
+	        builder.RegisterType<Scheduler>().As<IScheduler>().InstancePerLifetimeScope();
 
-	        builder.RegisterType<SchedulerCreater>().As<ISchedulerInitializer>().InstancePerLifetimeScope();
+	        builder.RegisterType<SchedulerCreater>().As<ISchedulerConfigurer>().InstancePerLifetimeScope();
 
 	        var connection = ConnectionMultiplexer.Connect(ConfigurationManager.AppSettings.Get("redisConnection"));
 

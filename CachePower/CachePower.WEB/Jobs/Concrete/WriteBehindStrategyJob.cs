@@ -9,6 +9,7 @@ namespace CachePower.WEB.Schedulers.Jobs
     {
         private readonly ICacheCargoRepository _cacheCargoRepository = (ICacheCargoRepository)GlobalConfiguration
             .Configuration.DependencyResolver.GetService(typeof(ICacheCargoRepository));
+
         private readonly IRepository _repository = (IRepository)GlobalConfiguration.Configuration
             .DependencyResolver.GetService(typeof(IRepository));
 

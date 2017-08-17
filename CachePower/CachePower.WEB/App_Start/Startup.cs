@@ -18,8 +18,8 @@ namespace CachePower.WEB
 
             app.UseHangfireServer();
 
-            var initializer = (ISchedulerInitializer)GlobalConfiguration.Configuration
-                .DependencyResolver.GetService(typeof(ISchedulerInitializer));
+            var initializer = (ISchedulerConfigurer)GlobalConfiguration.Configuration
+                .DependencyResolver.GetService(typeof(ISchedulerConfigurer));
 
             initializer.Configure();
         }
