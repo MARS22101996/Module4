@@ -2,7 +2,7 @@
 
 namespace CachePower.DAL.Entities
 {
-    public class CachedEntity
+    public class CachedCargo
     {
         public Cargo Entity { get; set; }
 

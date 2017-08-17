@@ -12,13 +12,15 @@ namespace CachePower.WEB
     {
         public void Configuration(IAppBuilder app)
         {
-            Hangfire.GlobalConfiguration.Configuration.UseSqlServerStorage("ShipmentDbConnection");
+            Hangfire.GlobalConfiguration.Configuration.UseSqlServerStorage("Module4DbConnection");
 
             app.UseHangfireDashboard();
+
             app.UseHangfireServer();
 
             var initializer = (ISchedulerInitializer)GlobalConfiguration.Configuration
                 .DependencyResolver.GetService(typeof(ISchedulerInitializer));
+
             initializer.Initialize();
         }
     }

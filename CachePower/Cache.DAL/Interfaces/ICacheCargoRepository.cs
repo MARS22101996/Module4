@@ -3,16 +3,16 @@ using CachePower.DAL.Entities;
 
 namespace CachePower.DAL.Interfaces
 {
-    public interface ICacheRepository
+    public interface ICacheCargoRepository
     {
         void Set(Cargo entity);
 
-        CachedEntity Get(int id);
+        CachedCargo Get(int id);
 
-        IEnumerable<CachedEntity> PopAllCreated();
+        IEnumerable<CachedCargo> PopAllCreated();
 
         void SetAsCreated(Cargo entity);
 
-        IEnumerable<CachedEntity> GetAll();
+        IEnumerable<CachedCargo> GetAll();
     }
 }

@@ -10,17 +10,17 @@ using StackExchange.Redis;
 
 namespace CachePower.WEB.Controllers
 {
-    [RoutePrefix("api/statistic")]
+    [RoutePrefix("api/cargostatistic")]
     public class StatisticController : ApiController
     {
-        private readonly ICacheRepository _cacheRepository;
+        private readonly ICacheCargoRepository _cacheCargoRepository;
         private readonly IServer _redisServer;
         private readonly IMapper _mapper;
 
-        public StatisticController(IServer redisServer, ICacheRepository cacheRepository, IMapper mapper)
+        public StatisticController(IServer redisServer, ICacheCargoRepository cacheCargoRepository, IMapper mapper)
         {
             _redisServer = redisServer;
-            _cacheRepository = cacheRepository;
+            _cacheCargoRepository = cacheCargoRepository;
             _mapper = mapper;
         }
 
@@ -44,7 +44,7 @@ namespace CachePower.WEB.Controllers
         [Route("getlast/{number}")]
         public IHttpActionResult GetLast(int number)
         {
-            var cachedCargoes = _cacheRepository.GetAll();
+            var cachedCargoes = _cacheCargoRepository.GetAll();
             var cargoes = cachedCargoes
                 .OrderByDescending(cargo => cargo.LastAccessed)
                 .Select(cargo => cargo.Entity)

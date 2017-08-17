@@ -6,7 +6,7 @@ namespace Caghing.Dal.Context
     public partial class ShipmentContext : DbContext
     {
         public ShipmentContext()
-            : base("name=ShipmentContext")
+            : base("name=Module4DbConnection")
         {
         }
 

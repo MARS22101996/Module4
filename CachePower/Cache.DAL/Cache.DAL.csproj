@@ -57,14 +57,14 @@
     <Compile Include="AppDbConfiguration.cs" />
     <Compile Include="Context\ShipmentContext.cs" />
     <Compile Include="Entities\BaseType.cs" />
-    <Compile Include="Entities\CachedEntity.cs" />
+    <Compile Include="Entities\CachedCargo.cs" />
     <Compile Include="Entities\Cargo.cs" />
     <Compile Include="Exceptions\CacheException.cs" />
-    <Compile Include="Interfaces\ICacheRepository.cs" />
+    <Compile Include="Interfaces\ICacheCargoRepository.cs" />
     <Compile Include="Interfaces\ICacheSettings.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\CacheRepository.cs" />
+    <Compile Include="Repositories\CacheCargoRepository.cs" />
     <Compile Include="Repositories\CargoRepository.cs" />
     <Compile Include="ShipmentDbContext.cs" />
   </ItemGroup>

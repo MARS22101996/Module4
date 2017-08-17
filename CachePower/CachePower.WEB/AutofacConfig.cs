@@ -14,6 +14,7 @@ using CachePower.WEB.Interfaces;
 using CachePower.WEB.MapperProfiles;
 using CachePower.WEB.Schedulers;
 using CachePower.WEB.Schedulers.Jobs;
+using Caghing.Dal.Context;
 using StackExchange.Redis;
 
 namespace CachePower.WEB
@@ -36,67 +37,50 @@ namespace CachePower.WEB
 
         private static void RegisterDependencies(Assembly currentAssembly, ContainerBuilder builder)
         {
-            builder.RegisterApiControllers(currentAssembly);
+	        builder.RegisterApiControllers(currentAssembly);
 
-            RegisterRedisCache(builder);
-            RegisterMapper(builder);
-            RegisterRepositories(builder);
-            RegisterScheduler(builder);
-            RegisterJobs(builder);
-            RegisterConfiguration(builder);
-        }
+	        builder.RegisterInstance(SimpleConfig.Configuration.Load<CacheSettings>()).As<ICacheSettings>();
 
-        private static void RegisterConfiguration(ContainerBuilder builder)
-        {
-            builder.RegisterInstance(SimpleConfig.Configuration.Load<CacheSettings>()).As<ICacheSettings>();
-        }
+	        builder.RegisterType<SaveCreatedCacheJob>().As<IJob>().InstancePerLifetimeScope();
 
-        private static void RegisterJobs(ContainerBuilder builder)
-        {
-            builder.RegisterType<SaveCreatedCacheJob>().As<IJob>().InstancePerLifetimeScope();
-            builder.RegisterType<UpdateCacheExpirationJob>().As<IJob>().InstancePerLifetimeScope();
-        }
+	        builder.RegisterType<UpdateCacheExpirationJob>().As<IJob>().InstancePerLifetimeScope();
 
-        private static void RegisterScheduler(ContainerBuilder builder)
-        {
-            builder.RegisterType<HangfireScheduler>().As<IScheduler>().InstancePerLifetimeScope();
-            builder.RegisterType<SchedulerInitializer>().As<ISchedulerInitializer>().InstancePerLifetimeScope();
-        }
+	        builder.RegisterType<HangfireScheduler>().As<IScheduler>().InstancePerLifetimeScope();
 
-        private static void RegisterRedisCache(ContainerBuilder builder)
-        {
-            var connection = ConnectionMultiplexer.Connect(ConfigurationManager.AppSettings.Get("redisConnection"));
-            var endpoint = connection.GetEndPoints().First();
-            var server = connection.GetServer(endpoint);
+	        builder.RegisterType<SchedulerCreater>().As<ISchedulerInitializer>().InstancePerLifetimeScope();
 
-            builder.RegisterInstance(connection.GetDatabase()).As<IDatabase>();
-            builder.RegisterInstance(server).As<IServer>();
-        }
+	        var connection = ConnectionMultiplexer.Connect(ConfigurationManager.AppSettings.Get("redisConnection"));
 
-        private static void RegisterRepositories(ContainerBuilder builder)
-        {
-            builder.RegisterType<ShipmentDbContext>().As<ShipmentDbContext>().InstancePerLifetimeScope();
-            builder.RegisterType<CargoRepository>().As<IRepository>().InstancePerLifetimeScope();
-            builder.RegisterType<CacheRepository>().As<ICacheRepository>().InstancePerLifetimeScope();
-        }
+	        var endpoint = connection.GetEndPoints().First();
 
-        private static void RegisterMapper(ContainerBuilder builder)
-        {
-            builder.RegisterAssemblyTypes().AssignableTo(typeof(Profile));
+	        var server = connection.GetServer(endpoint);
 
-            builder.RegisterType<ApiModelsToEntitiesProfile>().As<Profile>();
-            builder.RegisterType<EntitiesToApiModelsProfile>().As<Profile>();
+	        builder.RegisterInstance(connection.GetDatabase()).As<IDatabase>();
 
-            builder.Register(c => new MapperConfiguration(cfg =>
-            {
-                foreach (var profile in c.Resolve<IEnumerable<Profile>>())
-                {
-                    cfg.AddProfile(profile);
-                }
-            })).AsSelf().SingleInstance();
+	        builder.RegisterInstance(server).As<IServer>();
 
-            builder.Register(c => c.Resolve<MapperConfiguration>().CreateMapper(c.Resolve)).As<IMapper>()
-                .InstancePerLifetimeScope();
+	        builder.RegisterType<ShipmentContext>().As<ShipmentContext>().InstancePerLifetimeScope();
+
+	        builder.RegisterType<CargoRepository>().As<IRepository>().InstancePerLifetimeScope();
+
+	        builder.RegisterType<CacheCargoRepository>().As<ICacheCargoRepository>().InstancePerLifetimeScope();
+
+	        builder.RegisterAssemblyTypes().AssignableTo(typeof(Profile));
+
+	        builder.RegisterType<ApiModelsToEntitiesProfile>().As<Profile>();
+
+	        builder.RegisterType<EntitiesToApiModelsProfile>().As<Profile>();
+
+	        builder.Register(c => new MapperConfiguration(cfg =>
+	        {
+		        foreach (var profile in c.Resolve<IEnumerable<Profile>>())
+		        {
+			        cfg.AddProfile(profile);
+		        }
+	        })).AsSelf().SingleInstance();
+
+	        builder.Register(c => c.Resolve<MapperConfiguration>().CreateMapper(c.Resolve)).As<IMapper>()
+		        .InstancePerLifetimeScope();
         }
     }
 }

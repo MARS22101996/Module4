@@ -4,7 +4,7 @@ namespace CachePower.DAL.Interfaces
 {
     public interface IRepository
     {
-        Cargo Get(int id);
+        Cargo GetById(int id);
 
         void Create(Cargo item);
     }

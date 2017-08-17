@@ -7,40 +7,28 @@ using CachePower.WEB.Models;
 
 namespace CachePower.WEB.Controllers
 {
-    [RoutePrefix("api/usecache/cargoes")]
-    public class CargoCachedController : ApiController
+    [RoutePrefix("api/cargoes")]
+    public class SimpleController : ApiController
     {
         private readonly IRepository _repository;
-        private readonly ICacheRepository _cacheRepository;
         private readonly IMapper _mapper;
 
-        public CargoCachedController(
-            IRepository repository,
-            ICacheRepository cacheRepository,
-            IMapper mapper)
+        public SimpleController(IRepository repository, IMapper mapper)
         {
             _repository = repository;
-            _cacheRepository = cacheRepository;
             _mapper = mapper;
         }
 
         [HttpGet]
-        [Route("random")]
+        [Route("randomid")]
         public IHttpActionResult Get()
         {
-            var id = GetRandomId(500, 700);
-            var cargo = _cacheRepository.Get(id)?.Entity;
+            var id = GetBetweenIds(500, 700);
+            var cargo = _repository.GetById(id);
 
             if (cargo == null)
             {
-                cargo = _repository.Get(id);
-
-                if (cargo == null)
-                {
-                    return NotFound();
-                }
-
-                _cacheRepository.Set(cargo);
+                return NotFound();
             }
 
             var cargoApiModel = _mapper.Map<CargoApiModel>(cargo);
@@ -59,14 +47,14 @@ namespace CachePower.WEB.Controllers
 
             var cargo = _mapper.Map<Cargo>(cargoApiModel);
 
-            _cacheRepository.SetAsCreated(cargo);
+            _repository.Create(cargo);
 
             return Ok();
         }
 
-        private int GetRandomId(int min, int max)
-        {
-            return new Random().Next(min, max + 1);
-        }
-    }
+		private static int GetBetweenIds(int min, int max)
+		{
+			return new Random().Next(min, max + 1);
+		}
+	}
 }

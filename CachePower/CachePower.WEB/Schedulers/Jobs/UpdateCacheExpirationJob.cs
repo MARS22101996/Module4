@@ -7,22 +7,22 @@ namespace CachePower.WEB.Schedulers.Jobs
 {
     public class UpdateCacheExpirationJob : IJob 
     {
-        private readonly ICacheRepository _cacheRepository = (ICacheRepository)GlobalConfiguration
-            .Configuration.DependencyResolver.GetService(typeof(ICacheRepository));
+        private readonly ICacheCargoRepository _cacheCargoRepository = (ICacheCargoRepository)GlobalConfiguration
+            .Configuration.DependencyResolver.GetService(typeof(ICacheCargoRepository));
         private readonly ICacheSettings _settings = (ICacheSettings)GlobalConfiguration.Configuration
             .DependencyResolver.GetService(typeof(ICacheSettings));
 
-        public string JobName => "Update_Expirations";
+        public string JobName => "RefreshAheadStrategy";
 
         public void Execute()
         {
-            var cargoes = _cacheRepository.GetAll();
+            var cargoes = _cacheCargoRepository.GetAll();
 
             foreach (var cargo in cargoes)
             {
                 if (cargo.AccessCount >= _settings.AccessCountEnoughForUpdateExpiration)
                 {
-                    _cacheRepository.Set(cargo.Entity);
+                    _cacheCargoRepository.Set(cargo.Entity);
                 }
             }
         }

@@ -9,13 +9,13 @@ using StackExchange.Redis;
 
 namespace CachePower.DAL.Repositories
 {
-    public class CacheRepository : ICacheRepository
+    public class CacheCargoRepository : ICacheCargoRepository
     {
         private readonly IServer _server;
         private readonly IDatabase _database;
         private readonly ICacheSettings _settings;
 
-        public CacheRepository(IServer server, IDatabase database, ICacheSettings settings)
+        public CacheCargoRepository(IServer server, IDatabase database, ICacheSettings settings)
         {
             _server = server;
             _database = database;
@@ -25,21 +25,22 @@ namespace CachePower.DAL.Repositories
         public void Set(Cargo entity)
         {
             var key = GenerateKey(entity);
+
             var cachedEntity = GenerateCacheEntity(entity);
 
             SetCachedEntity(key, cachedEntity);
         }
 
-        public CachedEntity Get(int id)
+        public CachedCargo Get(int id)
         {
-            CachedEntity result = null;
+            CachedCargo result = null;
 
             var key = GenerateKey(new Cargo{ Id = id });
             var cachedValue = _database.StringGet(key);
 
             if (cachedValue.HasValue)
             {
-                result = JsonConvert.DeserializeObject<CachedEntity>(cachedValue);
+                result = JsonConvert.DeserializeObject<CachedCargo>(cachedValue);
                 result.AccessCount++;
                 result.LastAccessed = DateTime.UtcNow;
 
@@ -49,21 +50,21 @@ namespace CachePower.DAL.Repositories
             return result;
         }
 
-        public IEnumerable<CachedEntity> PopAllCreated()
+        public IEnumerable<CachedCargo> PopAllCreated()
         {
             if (!_settings.UseWriteBehindStrategy)
             {
                 throw new CacheException("Write behind strategy should be anabled to pop cache marked as created");
             }
 
-            var result = new List<CachedEntity>();
+            var result = new List<CachedCargo>();
 
             var cachedValues = _database.SetScan("Create_" + typeof(Cargo).Name).ToList();
 
             while (cachedValues.Any())
             {
                 result.AddRange(cachedValues
-                    .Select(value => JsonConvert.DeserializeObject<CachedEntity>(value)));
+                    .Select(value => JsonConvert.DeserializeObject<CachedCargo>(value)));
 
                 _database.SetRemove("Create_" + typeof(Cargo).Name, cachedValues.ToArray());
                 cachedValues = _database.SetScan("Create_" + typeof(Cargo).Name).ToList();
@@ -87,9 +88,9 @@ namespace CachePower.DAL.Repositories
             _database.SetAdd(key, value);
         }
 
-        public IEnumerable<CachedEntity> GetAll()
+        public IEnumerable<CachedCargo> GetAll()
         {
-            var result = new List<CachedEntity>();
+            var result = new List<CachedCargo>();
 
             var keys = _server.Keys(pattern: typeof(Cargo).Name + "_*");
             var cachedValues = _database.StringGet(keys.ToArray());
@@ -98,16 +99,16 @@ namespace CachePower.DAL.Repositories
             {
                 if (value.HasValue)
                 {
-                    result.Add(JsonConvert.DeserializeObject<CachedEntity>(value));
+                    result.Add(JsonConvert.DeserializeObject<CachedCargo>(value));
                 }
             }
 
             return result;
         }
 
-        private static CachedEntity GenerateCacheEntity(Cargo entity)
+        private static CachedCargo GenerateCacheEntity(Cargo entity)
         {
-            var cachedEntity = new CachedEntity
+            var cachedEntity = new CachedCargo
             {
                 Entity = entity,
                 AccessCount = 1,
@@ -117,19 +118,19 @@ namespace CachePower.DAL.Repositories
             return cachedEntity;
         }
 
-        private void SetCachedEntity(string key, CachedEntity cachedEntity)
+        private void SetCachedEntity(string key, CachedCargo cachedCargo)
         {
             _database.StringSet(
                 key,
-                JsonConvert.SerializeObject(cachedEntity),
+                JsonConvert.SerializeObject(cachedCargo),
                 TimeSpan.FromMinutes(_settings.ExpirationMinutes));
         }
 
-        private void UpdateCachedEntity(string key, CachedEntity cachedEntity)
+        private void UpdateCachedEntity(string key, CachedCargo cachedCargo)
         {
             var expiry = _database.StringGetWithExpiry(key).Expiry;
 
-            _database.StringSet(key, JsonConvert.SerializeObject(cachedEntity), expiry);
+            _database.StringSet(key, JsonConvert.SerializeObject(cachedCargo), expiry);
         }
 
         private string GenerateKey(Cargo entity)
