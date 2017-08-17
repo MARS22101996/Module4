@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cache.WEB", "CachePower.WEB\Cache.WEB.csproj", "{98C5ADAA-B2E7-40F1-A677-46D23C34466A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cache.DAL", "Cache.DAL\Cache.DAL.csproj", "{FBFB479D-3905-42EF-94AA-C2FAFD9BA705}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98C5ADAA-B2E7-40F1-A677-46D23C34466A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98C5ADAA-B2E7-40F1-A677-46D23C34466A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98C5ADAA-B2E7-40F1-A677-46D23C34466A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98C5ADAA-B2E7-40F1-A677-46D23C34466A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBFB479D-3905-42EF-94AA-C2FAFD9BA705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBFB479D-3905-42EF-94AA-C2FAFD9BA705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBFB479D-3905-42EF-94AA-C2FAFD9BA705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBFB479D-3905-42EF-94AA-C2FAFD9BA705}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
