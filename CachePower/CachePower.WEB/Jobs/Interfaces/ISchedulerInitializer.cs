@@ -2,6 +2,6 @@
 {
     public interface ISchedulerInitializer
     {
-        void Initialize();
+        void Configure();
     }
 }

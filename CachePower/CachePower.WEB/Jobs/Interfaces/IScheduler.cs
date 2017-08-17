@@ -5,8 +5,8 @@ namespace CachePower.WEB.Interfaces
 {
     public interface IScheduler
     {
-        void AddOrUpdate(string jobId, Expression<Action> action, TimeSpan interval);
+        void Add(string id, Expression<Action> action, TimeSpan interval);
 
-        void RemoveIfExists(string jobId);
+        void Delete(string id);
     }
 }

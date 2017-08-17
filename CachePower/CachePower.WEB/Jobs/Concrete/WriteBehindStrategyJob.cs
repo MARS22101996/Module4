@@ -5,16 +5,16 @@ using CachePower.WEB.Interfaces;
 
 namespace CachePower.WEB.Schedulers.Jobs
 {
-    public class SaveCreatedCacheJob : IJob
+    public class WriteBehindStrategyJob : IJob
     {
         private readonly ICacheCargoRepository _cacheCargoRepository = (ICacheCargoRepository)GlobalConfiguration
             .Configuration.DependencyResolver.GetService(typeof(ICacheCargoRepository));
         private readonly IRepository _repository = (IRepository)GlobalConfiguration.Configuration
             .DependencyResolver.GetService(typeof(IRepository));
 
-        public string JobName => "WriteBehindStrategy_Job";
+        public string Name => "WriteBehindStrategy_Job";
 
-        public void Execute()
+        public void Run()
         {
             var createdEntities = _cacheCargoRepository.PopAllCreated();
 

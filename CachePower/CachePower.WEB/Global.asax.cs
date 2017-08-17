@@ -7,7 +7,7 @@ namespace CachePower.WEB
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            AutofacConfig.Setup();
+            ConfigDI.Setup();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace CachePower.WEB
             var initializer = (ISchedulerInitializer)GlobalConfiguration.Configuration
                 .DependencyResolver.GetService(typeof(ISchedulerInitializer));
 
-            initializer.Initialize();
+            initializer.Configure();
         }
     }
 }

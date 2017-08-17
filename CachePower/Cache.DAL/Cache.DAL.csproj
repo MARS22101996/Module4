@@ -66,7 +66,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\CacheCargoRepository.cs" />
     <Compile Include="Repositories\CargoRepository.cs" />
-    <Compile Include="ShipmentDbContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -31,21 +31,21 @@ namespace CachePower.WEB.Controllers
                 return NotFound();
             }
 
-            var cargoApiModel = _mapper.Map<CargoApiModel>(cargo);
+            var cargoApiModel = _mapper.Map<CargoModel>(cargo);
 
             return Ok(cargoApiModel);
         }
 
         [HttpPost]
         [Route("")]
-        public IHttpActionResult Post(CargoApiModel cargoApiModel)
+        public IHttpActionResult Post(CargoModel cargoModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var cargo = _mapper.Map<Cargo>(cargoApiModel);
+            var cargo = _mapper.Map<Cargo>(cargoModel);
 
             _repository.Create(cargo);
 

@@ -2,7 +2,7 @@
 
 namespace CachePower.WEB.Models
 {
-    public class CargoApiModel
+    public class CargoModel
     {
         public int Id { get; set; }
 

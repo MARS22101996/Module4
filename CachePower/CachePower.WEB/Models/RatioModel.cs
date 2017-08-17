@@ -1,6 +1,6 @@
 ﻿namespace CachePower.WEB.Models
 {
-    public class CacheRatioApiModel
+    public class RatioModel
     {
         public long Hits { get; set; }
 

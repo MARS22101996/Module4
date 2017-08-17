@@ -19,7 +19,7 @@ using StackExchange.Redis;
 
 namespace CachePower.WEB
 {
-    public class AutofacConfig
+    public class ConfigDI
     {
         public static IContainer Setup()
         {
@@ -41,9 +41,9 @@ namespace CachePower.WEB
 
 	        builder.RegisterInstance(SimpleConfig.Configuration.Load<CacheSettings>()).As<ICacheSettings>();
 
-	        builder.RegisterType<SaveCreatedCacheJob>().As<IJob>().InstancePerLifetimeScope();
+	        builder.RegisterType<WriteBehindStrategyJob>().As<IJob>().InstancePerLifetimeScope();
 
-	        builder.RegisterType<UpdateCacheExpirationJob>().As<IJob>().InstancePerLifetimeScope();
+	        builder.RegisterType<RefreshAheadStrategyJob>().As<IJob>().InstancePerLifetimeScope();
 
 	        builder.RegisterType<HangfireScheduler>().As<IScheduler>().InstancePerLifetimeScope();
 

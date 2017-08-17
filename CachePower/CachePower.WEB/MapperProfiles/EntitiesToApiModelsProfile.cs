@@ -8,7 +8,7 @@ namespace CachePower.WEB.MapperProfiles
     {
         public EntitiesToApiModelsProfile()
         {
-            CreateMap<Cargo, CargoApiModel>();
+            CreateMap<Cargo, CargoModel>();
         }
     }
 }

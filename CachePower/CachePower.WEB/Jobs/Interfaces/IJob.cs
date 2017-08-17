@@ -2,8 +2,8 @@
 {
     public interface IJob
     {
-        string JobName { get; }
+        string Name { get; }
 
-        void Execute();
+        void Run();
     }
 }

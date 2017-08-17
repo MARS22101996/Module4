@@ -7,12 +7,12 @@ namespace CachePower.WEB.Schedulers
 {
     public class HangfireScheduler : IScheduler
     {
-        public void AddOrUpdate(string jobId, Expression<Action> action, TimeSpan interval)
+        public void Add(string jobId, Expression<Action> action, TimeSpan interval)
         {
             RecurringJob.AddOrUpdate(jobId, action, Cron.MinuteInterval((int)interval.TotalMinutes));
         }
 
-        public void RemoveIfExists(string jobId)
+        public void Delete(string jobId)
         {
             RecurringJob.RemoveIfExists(jobId);
         }

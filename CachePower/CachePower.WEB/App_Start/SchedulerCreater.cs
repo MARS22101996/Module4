@@ -20,7 +20,7 @@ namespace CachePower.WEB
             _jobs = jobs;
         }
 
-        public void Initialize()
+        public void Configure()
         {
 	        CheckIfUseUseWriteBehindStrategy();
 
@@ -29,28 +29,24 @@ namespace CachePower.WEB
 
 	    private void CheckIfUseUseWriteBehindStrategy()
 	    {
-			if (_settings.UseWriteBehindStrategy)
-			{
-				var job = _jobs.First(j => j.JobName.Equals("WriteBehindStrategy_Job"));
+		    if (!_settings.UseWriteBehindStrategy) return;
 
-				_scheduler.RemoveIfExists(job.JobName);
-			
-				_scheduler.AddOrUpdate(job.JobName, () => job.Execute(), TimeSpan.FromMinutes(_settings.WriteBehindSyncInterval));
-			}
-		}
+		    var job = _jobs.First(j => j.Name.Equals("WriteBehindStrategy_Job"));
+
+		    _scheduler.Delete(job.Name);
+
+		    _scheduler.Add(job.Name, () => job.Run(), TimeSpan.FromMinutes(_settings.WriteBehindSyncInterval));
+	    }
 
 	    private void CheckIfUseRefreshAheadStrategy()
 	    {
-			if (_settings.UseRefreshAheadStrategy)
-			{
-				var job = _jobs.First(j => j.JobName.Equals("RefreshAheadStrategy"));
+		    if (!_settings.UseRefreshAheadStrategy) return;
 
-				_scheduler.RemoveIfExists(job.JobName);
+		    var job = _jobs.First(j => j.Name.Equals("RefreshAheadStrategy"));
 
-				_scheduler.AddOrUpdate(job.JobName, () => job.Execute(), TimeSpan.FromMinutes(_settings.UpdateExpirationInterval));
-			}
-		}
+		    _scheduler.Delete(job.Name);
 
-
+		    _scheduler.Add(job.Name, () => job.Run(), TimeSpan.FromMinutes(_settings.UpdateExpirationInterval));
+	    }
 	}
 }

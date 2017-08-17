@@ -31,7 +31,7 @@ namespace CachePower.WEB.Controllers
             var info = _redisServer.Info();
             var stats = info.First(element => element.Key.Equals("Stats"));
 
-            var cahceRatio = new CacheRatioApiModel
+            var cahceRatio = new RatioModel
             {
                 Hits = Convert.ToInt64(stats.First(element => element.Key.Equals("keyspace_hits")).Value),
                 Misses = Convert.ToInt64(stats.First(element => element.Key.Equals("keyspace_misses")).Value)
@@ -50,7 +50,7 @@ namespace CachePower.WEB.Controllers
                 .Select(cargo => cargo.Entity)
                 .Take(number);
 
-            var cargoApiModels = _mapper.Map<IEnumerable<CargoApiModel>>(cargoes);
+            var cargoApiModels = _mapper.Map<IEnumerable<CargoModel>>(cargoes);
 
             return Ok(cargoApiModels);
         }
