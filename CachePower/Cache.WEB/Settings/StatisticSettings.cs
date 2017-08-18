@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Cache.WEB.Settings
+﻿namespace Cache.WEB.Settings
 {
 	public static  class StatisticSettings
 	{

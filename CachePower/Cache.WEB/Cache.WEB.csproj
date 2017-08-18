@@ -171,8 +171,8 @@
     <Compile Include="Controllers\StatisticController.cs" />
     <Compile Include="Jobs\Concrete\WriteBehindStrategyJob.cs" />
     <Compile Include="Jobs\Concrete\RefreshAheadStrategyJob.cs" />
-    <Compile Include="Jobs\Interfaces\IJob.cs" />
-    <Compile Include="Jobs\Interfaces\IScheduler.cs" />
+    <Compile Include="Jobs\Interfaces\IStrategyJob.cs" />
+    <Compile Include="Jobs\Interfaces\IJobScheduler.cs" />
     <Compile Include="Jobs\Interfaces\ISchedulerConfigurer.cs" />
     <Compile Include="Infrastructure\Mapper\ModelsToEntitiesProfile.cs" />
     <Compile Include="Infrastructure\Mapper\EntitiesToModelsProfile.cs" />
@@ -183,7 +183,7 @@
     <Compile Include="Models\RatioModel.cs" />
     <Compile Include="Models\CargoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Jobs\Scheduler.cs" />
+    <Compile Include="Jobs\JobScheduler.cs" />
     <Compile Include="Settings\StatisticSettings.cs" />
   </ItemGroup>
   <ItemGroup>

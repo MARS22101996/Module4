@@ -26,23 +26,25 @@ namespace Cache.DAL.Repositories.Concrete
             _settings = settings;
         }
 
-		public  IEnumerable<object> Get(Func<CachedCargo, object> orderPredicate, Func<CachedCargo, object> selectPredicate,
-		 int take)
-		{
-			var cargo = GetAll();
+	    public IEnumerable<object> Get(Func<CachedCargo, 
+			object> orderPredicate, 
+			Func<CachedCargo, object> selectPredicate,
+		    int take)
+	    {
+		    var cargo = GetAll();
 
-			var cargoes = cargo
-				.OrderByDescending(orderPredicate)
-				.Select(selectPredicate)
-				.Take(take);
+		    var cargoes = cargo
+			    .OrderByDescending(orderPredicate)
+			    .Select(selectPredicate)
+			    .Take(take);
 
-			return cargoes;
-		}
+		    return cargoes;
+	    }
 
 		
 		public IEnumerable<CachedCargo> PopAllCreated()
         {
-	        if (!_settings.UseWriteBehindStrategy) throw new ServiceException(ErrorMessage);
+	        if (!_settings.IsUseWriteBehindStrategy) throw new ServiceException(ErrorMessage);
 
 	        var result = new List<CachedCargo>();
 
@@ -63,19 +65,15 @@ namespace Cache.DAL.Repositories.Concrete
 
         public void CreateInTheCache(Cargo entity)
         {
-	        if (_settings.UseWriteBehindStrategy)
+	        if (_settings.IsUseWriteBehindStrategy)
 	        {
-		        var key = ActionKey + KeyHeader;
+		        const string key = ActionKey + KeyHeader;
 
 		        var cachedEntity = ConfigureCacheCargo(entity);
 
 		        var value = JsonConvert.SerializeObject(cachedEntity);
 
 		        _database.SetAdd(key, value);
-	        }
-	        else
-	        {
-		        throw new ServiceException(ErrorMessage);
 	        }
         }
 
@@ -141,7 +139,7 @@ namespace Cache.DAL.Repositories.Concrete
         {
 	        var serializedObject = JsonConvert.SerializeObject(cachedCargo);
 
-	        var time = TimeSpan.FromMinutes(_settings.ExpirationMinutes);
+	        var time = TimeSpan.FromMinutes(_settings.ExpirationInterval);
 
 			_database.StringSet(
                 key,

@@ -14,8 +14,10 @@ namespace Cache.WEB.Controllers
         private readonly ICacheCargoRepository _cacheCargoRepository;
         private readonly IMapper _mapper;
 	    private readonly Random _random;
+	    private const int MinValue = 500;
+		private const int MaxValue = 700;
 
-        public CachedController(
+		public CachedController(
             IRepository repository,
             ICacheCargoRepository cacheCargoRepository,
             IMapper mapper)
@@ -38,7 +40,7 @@ namespace Cache.WEB.Controllers
         [Route("randomid")]
         public IHttpActionResult Get()
         {
-            var id = GetBetweenIds(500, 700);
+            var id = GetBetweenIds(MinValue, MaxValue);
 
             var cargoCached = _cacheCargoRepository.GetById(id);
 
@@ -70,16 +72,13 @@ namespace Cache.WEB.Controllers
         [Route("")]
         public IHttpActionResult Post(CargoModel cargoModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+	        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var cargo = _mapper.Map<Cargo>(cargoModel);
+	        var cargo = _mapper.Map<Cargo>(cargoModel);
 
-            _cacheCargoRepository.CreateInTheCache(cargo);
+	        _cacheCargoRepository.CreateInTheCache(cargo);
 
-            return Ok();
+	        return Ok();
         }
 
 	}

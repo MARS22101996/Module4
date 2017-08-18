@@ -2,16 +2,16 @@
 {
     public interface ICacheSettings
     {
-        int ExpirationMinutes { get; }
+        int ExpirationInterval { get; }
 
-        bool UseRefreshAheadStrategy { get; }
+        bool IsRefreshAheadStrategy { get; }
 
-        bool UseWriteBehindStrategy { get; }
+        bool IsUseWriteBehindStrategy { get; }
 
         int WriteBehindSyncInterval { get; }
 
-        int UpdateExpirationInterval { get; }
+        int UpdateExpiration { get; }
 
-        int AccessCountEnoughForUpdateExpiration { get; }
+        int AccessCountLimit { get; }
     }
 }

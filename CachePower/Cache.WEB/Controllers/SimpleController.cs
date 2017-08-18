@@ -13,6 +13,8 @@ namespace Cache.WEB.Controllers
         private readonly IRepository _repository;
         private readonly IMapper _mapper;
 		private readonly Random _random;
+		private const int MinValue = 500;
+		private const int MaxValue = 700;
 
 
 		public SimpleController(IRepository repository, IMapper mapper)
@@ -33,33 +35,34 @@ namespace Cache.WEB.Controllers
         [Route("randomid")]
         public IHttpActionResult Get()
         {
-            var id = GetBetweenIds(500, 700);
+            var id = GetBetweenIds(MinValue, MaxValue);
+
             var cargo = _repository.GetById(id);
 
-            if (cargo == null)
-            {
-                return NotFound();
-            }
+	        if (cargo != null)
+	        {
+		        var cargoApiModel = _mapper.Map<CargoModel>(cargo);
 
-            var cargoApiModel = _mapper.Map<CargoModel>(cargo);
+		        return Ok(cargoApiModel);
+	        }
 
-            return Ok(cargoApiModel);
+	        return NotFound();
         }
 
         [HttpPost]
         [Route("")]
         public IHttpActionResult Post(CargoModel cargoModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+	        if (ModelState.IsValid)
+	        {
+		        var cargo = _mapper.Map<Cargo>(cargoModel);
 
-            var cargo = _mapper.Map<Cargo>(cargoModel);
+		        _repository.Create(cargo);
 
-            _repository.Create(cargo);
+		        return Ok();
+	        }
 
-            return Ok();
+	        return BadRequest(ModelState);
         }
 	}
 }

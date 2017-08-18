@@ -37,15 +37,38 @@ namespace Cache.WEB.Infrastructure.DI
 
         private static void RegisterDependencies(Assembly currentAssembly, ContainerBuilder builder)
         {
-	        builder.RegisterApiControllers(currentAssembly);
+			builder.RegisterType<ShipmentContext>().As<ShipmentContext>().InstancePerLifetimeScope();
+
+			builder.RegisterType<CargoRepository>().As<IRepository>().InstancePerLifetimeScope();
+
+			builder.RegisterType<CacheCargoRepository>().As<ICacheCargoRepository>().InstancePerLifetimeScope();
+
+			builder.RegisterAssemblyTypes().AssignableTo(typeof(Profile));
+
+			builder.RegisterType<ModelsToEntitiesProfile>().As<Profile>();
+
+			builder.RegisterType<EntitiesToModelsProfile>().As<Profile>();
+
+			builder.Register(c => new MapperConfiguration(cfg =>
+			{
+				foreach (var profile in c.Resolve<IEnumerable<Profile>>())
+				{
+					cfg.AddProfile(profile);
+				}
+			})).AsSelf().SingleInstance();
+
+			builder.Register(c => c.Resolve<MapperConfiguration>().CreateMapper(c.Resolve)).As<IMapper>()
+				.InstancePerLifetimeScope();
+
+			builder.RegisterApiControllers(currentAssembly);
 
 	        builder.RegisterInstance(SimpleConfig.Configuration.Load<CacheSettings>()).As<ICacheSettings>();
 
-	        builder.RegisterType<WriteBehindStrategyJob>().As<IJob>().InstancePerLifetimeScope();
+	        builder.RegisterType<WriteBehindStrategyJob>().As<IStrategyJob>().InstancePerLifetimeScope();
 
-	        builder.RegisterType<RefreshAheadStrategyJob>().As<IJob>().InstancePerLifetimeScope();
+	        builder.RegisterType<RefreshAheadStrategyJob>().As<IStrategyJob>().InstancePerLifetimeScope();
 
-	        builder.RegisterType<Scheduler>().As<IScheduler>().InstancePerLifetimeScope();
+	        builder.RegisterType<JobScheduler>().As<IJobScheduler>().InstancePerLifetimeScope();
 
 	        builder.RegisterType<SchedulerCreater>().As<ISchedulerConfigurer>().InstancePerLifetimeScope();
 
@@ -58,29 +81,6 @@ namespace Cache.WEB.Infrastructure.DI
 	        builder.RegisterInstance(connection.GetDatabase()).As<IDatabase>();
 
 	        builder.RegisterInstance(server).As<IServer>();
-
-	        builder.RegisterType<ShipmentContext>().As<ShipmentContext>().InstancePerLifetimeScope();
-
-	        builder.RegisterType<CargoRepository>().As<IRepository>().InstancePerLifetimeScope();
-
-	        builder.RegisterType<CacheCargoRepository>().As<ICacheCargoRepository>().InstancePerLifetimeScope();
-
-	        builder.RegisterAssemblyTypes().AssignableTo(typeof(Profile));
-
-	        builder.RegisterType<ModelsToEntitiesProfile>().As<Profile>();
-
-	        builder.RegisterType<EntitiesToModelsProfile>().As<Profile>();
-
-	        builder.Register(c => new MapperConfiguration(cfg =>
-	        {
-		        foreach (var profile in c.Resolve<IEnumerable<Profile>>())
-		        {
-			        cfg.AddProfile(profile);
-		        }
-	        })).AsSelf().SingleInstance();
-
-	        builder.Register(c => c.Resolve<MapperConfiguration>().CreateMapper(c.Resolve)).As<IMapper>()
-		        .InstancePerLifetimeScope();
         }
     }
 }
