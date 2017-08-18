@@ -12,14 +12,24 @@ namespace Cache.WEB.Controllers
     {
         private readonly IRepository _repository;
         private readonly IMapper _mapper;
+		private readonly Random _random;
 
-        public SimpleController(IRepository repository, IMapper mapper)
+
+		public SimpleController(IRepository repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
-        }
+			_random = new Random();
+		}
 
-        [HttpGet]
+		private int GetBetweenIds(int min, int max)
+		{
+			var randomValue = _random.Next(min, max + 1);
+
+			return randomValue;
+		}
+
+		[HttpGet]
         [Route("randomid")]
         public IHttpActionResult Get()
         {
@@ -51,10 +61,5 @@ namespace Cache.WEB.Controllers
 
             return Ok();
         }
-
-		private static int GetBetweenIds(int min, int max)
-		{
-			return new Random().Next(min, max + 1);
-		}
 	}
 }

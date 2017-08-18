@@ -7,8 +7,8 @@
     <ProjectGuid>{FBFB479D-3905-42EF-94AA-C2FAFD9BA705}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CachePower.DAL</RootNamespace>
-    <AssemblyName>CachePower.DAL</AssemblyName>
+    <RootNamespace>Cache.DAL</RootNamespace>
+    <AssemblyName>Cache.DAL</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -58,6 +58,7 @@
     <Compile Include="Context\ShipmentContext.cs" />
     <Compile Include="Entities\CachedCargo.cs" />
     <Compile Include="Entities\Cargo.cs" />
+    <Compile Include="Enums\JobType.cs" />
     <Compile Include="Exceptions\ServiceException.cs" />
     <Compile Include="Interfaces\ICacheCargoRepository.cs" />
     <Compile Include="Interfaces\ICacheSettings.cs" />

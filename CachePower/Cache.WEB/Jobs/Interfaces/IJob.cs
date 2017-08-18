@@ -1,8 +1,10 @@
-﻿namespace Cache.WEB.Interfaces
+﻿using Cache.DAL.Enums;
+
+namespace Cache.WEB.Interfaces
 {
     public interface IJob
     {
-        string Name { get; }
+        JobType Name { get; }
 
         void Run();
     }

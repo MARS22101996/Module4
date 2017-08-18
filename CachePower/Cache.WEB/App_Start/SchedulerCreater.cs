@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Cache.DAL.Interfaces;
 using Cache.WEB.Interfaces;
 using Cache.WEB.Schedulers.Jobs;
@@ -35,7 +33,7 @@ namespace Cache.WEB
 
 		    _timeSpan = TimeSpan.FromMinutes(_settings.WriteBehindSyncInterval);
 
-			_scheduler.Act(job.Name, () => job.Run(), _timeSpan);
+			_scheduler.Act(job.Name.ToString(), () => job.Run(), _timeSpan);
 	    }
 
 	    private void CheckIfUseRefreshAheadStrategy()
@@ -46,7 +44,7 @@ namespace Cache.WEB
 
 		    _timeSpan = TimeSpan.FromMinutes(_settings.UpdateExpirationInterval);
 
-			_scheduler.Act(job.Name, () => job.Run(), _timeSpan);
+			_scheduler.Act(job.Name.ToString(), () => job.Run(), _timeSpan);
 	    }
 	}
 }

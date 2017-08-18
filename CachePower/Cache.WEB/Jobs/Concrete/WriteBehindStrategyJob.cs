@@ -2,6 +2,7 @@
 using Cache.DAL.Interfaces;
 using Cache.WEB.Interfaces;
 using Cache.DAL.Entities;
+using Cache.DAL.Enums;
 
 namespace Cache.WEB.Schedulers.Jobs
 {
@@ -13,7 +14,7 @@ namespace Cache.WEB.Schedulers.Jobs
         private readonly IRepository _repository = (IRepository)GlobalConfiguration.Configuration
             .DependencyResolver.GetService(typeof(IRepository));
 
-        public string Name => "WriteBehindStrategy_Job";
+        public JobType Name => JobType.WriteBehind;
 
         public void Run()
         {

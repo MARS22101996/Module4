@@ -10,9 +10,11 @@ namespace Cache.WEB
 {
     public class Startup
     {
-        public void Configuration(IAppBuilder app)
+	    private const string DbConnection = "Module4DbConnection";
+
+		public void Configuration(IAppBuilder app)
         {
-            Hangfire.GlobalConfiguration.Configuration.UseSqlServerStorage("Module4DbConnection");
+            Hangfire.GlobalConfiguration.Configuration.UseSqlServerStorage(DbConnection);
 
             app.UseHangfireDashboard();
 
