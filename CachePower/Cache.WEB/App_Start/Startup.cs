@@ -1,5 +1,5 @@
-﻿using Cache.WEB.Interfaces;
-using Cache.WEB;
+﻿using Cache.WEB;
+using Cache.WEB.Jobs.Interfaces;
 using Hangfire;
 using Microsoft.Owin;
 using Owin;

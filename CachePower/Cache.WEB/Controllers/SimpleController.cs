@@ -2,7 +2,7 @@
 using System.Web.Http;
 using AutoMapper;
 using Cache.DAL.Entities;
-using Cache.DAL.Interfaces;
+using Cache.DAL.Repositories.Interfaces;
 using Cache.WEB.Models;
 
 namespace Cache.WEB.Controllers

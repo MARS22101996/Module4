@@ -1,8 +1,7 @@
 ﻿using System;
-using Cache.DAL.Interfaces;
-using Cache.WEB.Interfaces;
-using Cache.WEB.Schedulers.Jobs;
-using CachePower.WEB.Jobs.Interfaces;
+using Cache.DAL.Repositories.Interfaces;
+using Cache.WEB.Jobs.Concrete;
+using Cache.WEB.Jobs.Interfaces;
 
 namespace Cache.WEB
 {

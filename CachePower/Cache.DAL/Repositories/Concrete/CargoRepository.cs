@@ -1,8 +1,9 @@
-﻿using Cache.DAL.Context;
+﻿using System.Linq;
+using Cache.DAL.Context;
 using Cache.DAL.Entities;
-using Cache.DAL.Interfaces;
+using Cache.DAL.Repositories.Interfaces;
 
-namespace Cache.DAL.Repositories
+namespace Cache.DAL.Repositories.Concrete
 {
     public class CargoRepository : IRepository
     {
@@ -15,7 +16,7 @@ namespace Cache.DAL.Repositories
 
         public virtual Cargo GetById(int id)
         {
-            var cargo = _context.Cargo.Find(id);
+            var cargo = _context.Cargo.FirstOrDefault(x => x.Id == id);
 
             return cargo;
         }

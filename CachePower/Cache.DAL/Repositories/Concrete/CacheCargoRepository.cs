@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Cache.DAL.Entities;
 using Cache.DAL.Exceptions;
-using Cache.DAL.Interfaces;
+using Cache.DAL.Repositories.Interfaces;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 
-namespace Cache.DAL.Repositories
+namespace Cache.DAL.Repositories.Concrete
 {
     public class CacheCargoRepository : ICacheCargoRepository
     {
@@ -124,7 +124,6 @@ namespace Cache.DAL.Repositories
 
 			return result;
 		}
-
 
 		private static CachedCargo ConfigureCacheCargo(Cargo entity)
         {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace CachePower.WEB.Jobs.Interfaces
+namespace Cache.WEB.Jobs.Interfaces
 {
     public interface IScheduler
     {

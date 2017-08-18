@@ -1,4 +1,4 @@
-﻿using Cache.DAL.Interfaces;
+﻿using Cache.DAL.Repositories.Interfaces;
 
 namespace Cache.WEB.Settings
 {

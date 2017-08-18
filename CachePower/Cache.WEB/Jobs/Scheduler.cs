@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Cache.WEB.Interfaces;
-using CachePower.WEB.Jobs.Interfaces;
+using Cache.WEB.Jobs.Interfaces;
 using Hangfire;
 
-namespace Cache.WEB.Schedulers
+namespace Cache.WEB.Jobs
 {
     public class Scheduler : IScheduler
     {

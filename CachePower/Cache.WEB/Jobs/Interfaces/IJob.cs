@@ -1,6 +1,6 @@
 ﻿using Cache.DAL.Enums;
 
-namespace Cache.WEB.Interfaces
+namespace Cache.WEB.Jobs.Interfaces
 {
     public interface IJob
     {

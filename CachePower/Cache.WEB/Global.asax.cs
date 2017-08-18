@@ -1,4 +1,5 @@
 ﻿using System.Web.Http;
+using Cache.WEB.Infrastructure.DI;
 
 namespace Cache.WEB
 {

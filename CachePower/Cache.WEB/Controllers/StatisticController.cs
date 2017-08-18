@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Web.Http;
 using AutoMapper;
 using Cache.DAL.Entities;
-using Cache.DAL.Interfaces;
+using Cache.DAL.Repositories.Interfaces;
 using Cache.WEB.Models;
 using Cache.WEB.Settings;
 using StackExchange.Redis;
@@ -26,7 +25,22 @@ namespace Cache.WEB.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+		[HttpGet]
+		[Route("gettop/{count}")]
+		public IHttpActionResult GetTopNcargoes(int count)
+		{
+			Func<CachedCargo, object> orderPredicate = cargo => cargo.LastAccessed;
+
+			Func<CachedCargo, object> selectPredicate = cargo => cargo.EntityCargo;
+
+			var cargoes = _cacheCargoRepository.Get(orderPredicate, selectPredicate, count);
+
+			var cargoApiModels = _mapper.Map<IEnumerable<CargoModel>>(cargoes);
+
+			return Ok(cargoApiModels);
+		}
+
+		[HttpGet]
         [Route("ratio")]
         public IHttpActionResult GetRatio()
         {
@@ -52,20 +66,5 @@ namespace Cache.WEB.Controllers
 
 		    return Convert.ToInt64(stat);
 	    }
-
-        [HttpGet]
-        [Route("gettop/{count}")]
-        public IHttpActionResult GetTopNcargoes(int count)
-        {
-			Func<CachedCargo, object> orderPredicate = cargo => cargo.LastAccessed;
-
-			Func<CachedCargo, object> selectPredicate = cargo => cargo.EntityCargo;
-
-			var cargoes = _cacheCargoRepository.Get(orderPredicate, selectPredicate, count);
-
-			var cargoApiModels = _mapper.Map<IEnumerable<CargoModel>>(cargoes);
-
-            return Ok(cargoApiModels);
-        }
     }
 }

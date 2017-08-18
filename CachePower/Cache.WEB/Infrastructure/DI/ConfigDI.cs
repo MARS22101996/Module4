@@ -7,18 +7,17 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using AutoMapper;
 using Cache.DAL.Context;
-using Cache.DAL.Interfaces;
 using Cache.DAL.Repositories;
-using Cache.WEB.Interfaces;
-using Cache.WEB.MapperProfiles;
-using Cache.WEB.Schedulers;
-using Cache.WEB.Schedulers.Jobs;
+using Cache.DAL.Repositories.Concrete;
+using Cache.DAL.Repositories.Interfaces;
+using Cache.WEB.Infrastructure.Mapper;
+using Cache.WEB.Jobs;
+using Cache.WEB.Jobs.Concrete;
+using Cache.WEB.Jobs.Interfaces;
 using Cache.WEB.Settings;
-using Cache.DAL;
-using CachePower.WEB.Jobs.Interfaces;
 using StackExchange.Redis;
 
-namespace Cache.WEB
+namespace Cache.WEB.Infrastructure.DI
 {
     public class ConfigDI
     {
@@ -68,9 +67,9 @@ namespace Cache.WEB
 
 	        builder.RegisterAssemblyTypes().AssignableTo(typeof(Profile));
 
-	        builder.RegisterType<ApiModelsToEntitiesProfile>().As<Profile>();
+	        builder.RegisterType<ModelsToEntitiesProfile>().As<Profile>();
 
-	        builder.RegisterType<EntitiesToApiModelsProfile>().As<Profile>();
+	        builder.RegisterType<EntitiesToModelsProfile>().As<Profile>();
 
 	        builder.Register(c => new MapperConfiguration(cfg =>
 	        {

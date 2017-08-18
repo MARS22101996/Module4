@@ -165,7 +165,7 @@
     <Compile Include="App_Start\SchedulerCreater.cs" />
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="ConfigDI.cs" />
+    <Compile Include="Infrastructure\DI\ConfigDI.cs" />
     <Compile Include="Settings\CacheSettings.cs" />
     <Compile Include="Controllers\CachedController.cs" />
     <Compile Include="Controllers\StatisticController.cs" />
@@ -174,8 +174,8 @@
     <Compile Include="Jobs\Interfaces\IJob.cs" />
     <Compile Include="Jobs\Interfaces\IScheduler.cs" />
     <Compile Include="Jobs\Interfaces\ISchedulerConfigurer.cs" />
-    <Compile Include="MapperProfiles\ApiModelsToEntitiesProfile.cs" />
-    <Compile Include="MapperProfiles\EntitiesToApiModelsProfile.cs" />
+    <Compile Include="Infrastructure\Mapper\ModelsToEntitiesProfile.cs" />
+    <Compile Include="Infrastructure\Mapper\EntitiesToModelsProfile.cs" />
     <Compile Include="Controllers\SimpleController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

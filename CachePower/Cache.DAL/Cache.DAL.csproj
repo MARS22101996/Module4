@@ -60,12 +60,12 @@
     <Compile Include="Entities\Cargo.cs" />
     <Compile Include="Enums\JobType.cs" />
     <Compile Include="Exceptions\ServiceException.cs" />
-    <Compile Include="Interfaces\ICacheCargoRepository.cs" />
-    <Compile Include="Interfaces\ICacheSettings.cs" />
-    <Compile Include="Interfaces\IRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ICacheCargoRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ICacheSettings.cs" />
+    <Compile Include="Repositories\Interfaces\IRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\CacheCargoRepository.cs" />
-    <Compile Include="Repositories\CargoRepository.cs" />
+    <Compile Include="Repositories\Concrete\CacheCargoRepository.cs" />
+    <Compile Include="Repositories\Concrete\CargoRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -11,6 +11,6 @@ namespace Cache.WEB.Settings
 
 		public static string Hits => "keyspace_hits";
 
-		public static string Misses => "keyspace_hits";
+		public static string Misses => "keyspace_misses";
 	}
 }

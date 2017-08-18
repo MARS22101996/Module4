@@ -2,11 +2,11 @@
 using Cache.DAL.Entities;
 using Cache.WEB.Models;
 
-namespace Cache.WEB.MapperProfiles
+namespace Cache.WEB.Infrastructure.Mapper
 {
-    public class ApiModelsToEntitiesProfile : Profile
+    public class ModelsToEntitiesProfile : Profile
     {
-        public ApiModelsToEntitiesProfile()
+        public ModelsToEntitiesProfile()
         {
             CreateMap<CargoModel, Cargo>();
         }

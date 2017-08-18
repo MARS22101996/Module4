@@ -3,7 +3,7 @@ using Cache.DAL.Entities;
 
 namespace Cache.DAL.Context
 {
-    public partial class ShipmentContext : DbContext
+    public class ShipmentContext : DbContext
     {
         public ShipmentContext()
             : base("name=Module4DbConnection")

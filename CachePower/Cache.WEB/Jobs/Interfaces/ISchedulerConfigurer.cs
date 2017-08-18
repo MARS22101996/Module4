@@ -1,4 +1,4 @@
-﻿namespace Cache.WEB.Interfaces
+﻿namespace Cache.WEB.Jobs.Interfaces
 {
     public interface ISchedulerConfigurer
     {

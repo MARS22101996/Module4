@@ -1,10 +1,9 @@
 ﻿using System.Web.Http;
-using Cache.DAL.Interfaces;
-using Cache.WEB.Interfaces;
-using Cache.DAL.Entities;
 using Cache.DAL.Enums;
+using Cache.DAL.Repositories.Interfaces;
+using Cache.WEB.Jobs.Interfaces;
 
-namespace Cache.WEB.Schedulers.Jobs
+namespace Cache.WEB.Jobs.Concrete
 {
     public class WriteBehindStrategyJob : IJob
     {
