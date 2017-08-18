@@ -3,6 +3,7 @@
 	public enum JobType
 	{
 		RefreshAhead = 0,
+
 		WriteBehind = 1
 	}
 }

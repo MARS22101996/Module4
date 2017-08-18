@@ -24,7 +24,7 @@ namespace Cache.WEB.Schedulers.Jobs
             {
                 if (cargo.AccessCount >= _settings.AccessCountEnoughForUpdateExpiration)
                 {
-                    _cacheCargoRepository.Configure(cargo.Entity);
+                    _cacheCargoRepository.Configure(cargo.EntityCargo);
                 }
             }
         }

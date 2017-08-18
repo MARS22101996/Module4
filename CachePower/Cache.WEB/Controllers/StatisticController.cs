@@ -29,6 +29,7 @@ namespace Cache.WEB.Controllers
         public IHttpActionResult Ratio()
         {
             var info = _redisServer.Info();
+
             var stats = info.First(element => element.Key.Equals("Stats"));
 
             var cahceRatio = new RatioModel
@@ -48,7 +49,7 @@ namespace Cache.WEB.Controllers
 
             var cargoes = cachedCargoes
                 .OrderByDescending(cargo => cargo.LastAccessed)
-                .Select(cargo => cargo.Entity)
+                .Select(cargo => cargo.EntityCargo)
                 .Take(number);
 
             var cargoApiModels = _mapper.Map<IEnumerable<CargoModel>>(cargoes);

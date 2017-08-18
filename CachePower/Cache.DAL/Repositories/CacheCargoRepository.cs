@@ -25,11 +25,11 @@ namespace Cache.DAL.Repositories
             _settings = settings;
         }
 
-        public void Configure(Cargo entity)
+        public void Configure(Cargo item)
         {
-            var key = ConfigureCacheKey(entity.Id);
+            var key = ConfigureCacheKey(item.Id);
 
-            var cachedEntity = ConfigureCacheCargo(entity);
+            var cachedEntity = ConfigureCacheCargo(item);
 
             SetCachedEntity(key, cachedEntity);
         }
@@ -114,9 +114,9 @@ namespace Cache.DAL.Repositories
         {
             var cachedEntity = new CachedCargo
             {
-                Entity = entity,
+                EntityCargo = entity,
                 AccessCount = 1,
-                CacheUniqueKey = Guid.NewGuid()
+                Key = Guid.NewGuid()
             };
 
             return cachedEntity;

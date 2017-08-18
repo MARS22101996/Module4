@@ -5,7 +5,7 @@ namespace Cache.DAL.Interfaces
 {
     public interface ICacheCargoRepository
     {
-        void Configure(Cargo entity);
+        void Configure(Cargo item);
 
         CachedCargo GetById(int id);
 

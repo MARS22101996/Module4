@@ -22,7 +22,7 @@ namespace Cache.WEB.Schedulers.Jobs
 
             foreach (var cachedEntity in createdEntities)
             {
-                _repository.Create(cachedEntity.Entity);
+                _repository.Create(cachedEntity.EntityCargo);
             }
         }
     }

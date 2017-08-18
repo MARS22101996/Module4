@@ -46,7 +46,7 @@ namespace Cache.WEB.Controllers
 
 	        if (cargoCached != null)
 	        {
-		        cargo = cargoCached.Entity;
+		        cargo = cargoCached.EntityCargo;
 	        }
 			
             if (cargo == null)
