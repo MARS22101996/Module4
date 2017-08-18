@@ -184,6 +184,7 @@
     <Compile Include="Models\CargoModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Jobs\Scheduler.cs" />
+    <Compile Include="Settings\StatisticSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

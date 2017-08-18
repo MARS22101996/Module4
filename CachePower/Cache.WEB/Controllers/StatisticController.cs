@@ -5,7 +5,7 @@ using System.Web.Http;
 using AutoMapper;
 using Cache.DAL.Interfaces;
 using Cache.WEB.Models;
-using Cache.DAL.Entities;
+using Cache.WEB.Settings;
 using StackExchange.Redis;
 
 namespace Cache.WEB.Controllers
@@ -26,20 +26,30 @@ namespace Cache.WEB.Controllers
 
         [HttpGet]
         [Route("ratio")]
-        public IHttpActionResult Ratio()
+        public IHttpActionResult GetRatio()
         {
-            var info = _redisServer.Info();
+            var infomatinRedis = _redisServer.Info();
 
-            var stats = info.First(element => element.Key.Equals("Stats"));
+            var statistic = infomatinRedis.First(element => element.Key.Equals(StatisticSettings.Stats));
 
             var cahceRatio = new RatioModel
             {
-                Hits = Convert.ToInt64(stats.First(element => element.Key.Equals("keyspace_hits")).Value),
-                Misses = Convert.ToInt64(stats.First(element => element.Key.Equals("keyspace_misses")).Value)
-            };
+                Hits = GetHitsOrMisses(statistic, StatisticSettings.Hits),
+
+                Misses = GetHitsOrMisses(statistic, StatisticSettings.Misses)
+			};
 
             return Ok(cahceRatio);
         }
+
+	    private long GetHitsOrMisses(IGrouping<string, KeyValuePair<string, string>> statistic, string parameter)
+	    {
+		    if (statistic == null) throw new ArgumentNullException(nameof(statistic));
+
+		    var stat = statistic.First(element => element.Key.Equals(parameter)).Value;
+
+		    return Convert.ToInt64(stat);
+	    }
 
         [HttpGet]
         [Route("getlast/{number}")]
