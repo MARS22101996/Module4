@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web.Http;
 using AutoMapper;
+using Cache.DAL.Entities;
 using Cache.DAL.Interfaces;
 using Cache.WEB.Models;
 using Cache.WEB.Settings;
@@ -52,17 +54,16 @@ namespace Cache.WEB.Controllers
 	    }
 
         [HttpGet]
-        [Route("getlast/{number}")]
-        public IHttpActionResult GetLast(int number)
+        [Route("gettop/{count}")]
+        public IHttpActionResult GetTopNcargoes(int count)
         {
-            var cachedCargoes = _cacheCargoRepository.GetAll();
+			Func<CachedCargo, object> orderPredicate = cargo => cargo.LastAccessed;
 
-            var cargoes = cachedCargoes
-                .OrderByDescending(cargo => cargo.LastAccessed)
-                .Select(cargo => cargo.EntityCargo)
-                .Take(number);
+			Func<CachedCargo, object> selectPredicate = cargo => cargo.EntityCargo;
 
-            var cargoApiModels = _mapper.Map<IEnumerable<CargoModel>>(cargoes);
+			var cargoes = _cacheCargoRepository.Get(orderPredicate, selectPredicate, count);
+
+			var cargoApiModels = _mapper.Map<IEnumerable<CargoModel>>(cargoes);
 
             return Ok(cargoApiModels);
         }

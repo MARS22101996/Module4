@@ -1,18 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using Cache.DAL.Entities;
 
 namespace Cache.DAL.Interfaces
 {
     public interface ICacheCargoRepository
     {
-        void Configure(Cargo item);
+	    IEnumerable<object> Get(Func<CachedCargo, object> orderPredicate, Func<CachedCargo, object> selectPredicate,
+		    int take);
 
-        CachedCargo GetById(int id);
+		void Configure(Cargo item);
 
-        IEnumerable<CachedCargo> PopAllCreated();
+		void CreateInTheCache(Cargo entity);
 
-        void SetAsCreated(Cargo entity);
+		IEnumerable<CachedCargo> GetAll();
 
-        IEnumerable<CachedCargo> GetAll();
+		CachedCargo GetById(int id);
+
+        IEnumerable<CachedCargo> PopAllCreated(); 
     }
 }

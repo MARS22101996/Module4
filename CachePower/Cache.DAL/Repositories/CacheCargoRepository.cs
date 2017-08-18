@@ -16,6 +16,7 @@ namespace Cache.DAL.Repositories
         private readonly ICacheSettings _settings;
 	    private const string KeyHeader = "Cargo";
 	    private const string ErrorMessage = "This action suits another strategy";
+	    private const string ActionKey = "Add_";
 
 
 		public CacheCargoRepository(IServer server, IDatabase database, ICacheSettings settings)
@@ -25,67 +26,46 @@ namespace Cache.DAL.Repositories
             _settings = settings;
         }
 
-        public void Configure(Cargo item)
-        {
-            var key = ConfigureCacheKey(item.Id);
-
-            var cachedEntity = ConfigureCacheCargo(item);
-
-            SetCachedEntity(key, cachedEntity);
-        }
-
-		private void CheckIfCachedValueExists(RedisValue value, ref CachedCargo result, string key)
+		public  IEnumerable<object> Get(Func<CachedCargo, object> orderPredicate, Func<CachedCargo, object> selectPredicate,
+		 int take)
 		{
-			if (!value.HasValue) return;
+			var cargo = GetAll();
 
-			result = JsonConvert.DeserializeObject<CachedCargo>(value);
+			var cargoes = cargo
+				.OrderByDescending(orderPredicate)
+				.Select(selectPredicate)
+				.Take(take);
 
-			result.AccessCount++;
-
-			result.LastAccessed = DateTime.UtcNow;
-
-			UpdateCachedEntity(key, result);
+			return cargoes;
 		}
 
-		public CachedCargo GetById(int id)
-        {
-            CachedCargo result = null;
-
-            var key = ConfigureCacheKey(id);
-
-            var cachedValue = _database.StringGet(key);
-
-	        CheckIfCachedValueExists(cachedValue, ref result, key);
-
-			return result;
-        }	   
-
+		
 		public IEnumerable<CachedCargo> PopAllCreated()
         {
 	        if (!_settings.UseWriteBehindStrategy) throw new ServiceException(ErrorMessage);
 
 	        var result = new List<CachedCargo>();
 
-	        var cachedValues = _database.SetScan("Add_" + KeyHeader).ToList();
+	        var cachedValues = _database.SetScan(ActionKey + KeyHeader).ToList();
 
 	        while (cachedValues.Any())
 	        {
 		        result.AddRange(cachedValues
 			        .Select(value => JsonConvert.DeserializeObject<CachedCargo>(value)));
 
-		        _database.SetRemove("Add_" + KeyHeader, cachedValues.ToArray());
+		        _database.SetRemove(ActionKey + KeyHeader, cachedValues.ToArray());
 
-		        cachedValues = _database.SetScan("Add_" + KeyHeader).ToList();
+		        cachedValues = _database.SetScan(ActionKey + KeyHeader).ToList();
 	        }
 
 	        return result;
         }
 
-        public void SetAsCreated(Cargo entity)
+        public void CreateInTheCache(Cargo entity)
         {
 	        if (_settings.UseWriteBehindStrategy)
 	        {
-		        var key = "Add_" + typeof(Cargo).Name;
+		        var key = ActionKey + typeof(Cargo).Name;
 
 		        var cachedEntity = ConfigureCacheCargo(entity);
 
@@ -101,7 +81,7 @@ namespace Cache.DAL.Repositories
 
         public IEnumerable<CachedCargo> GetAll()
         {
-	        var keys = _server.Keys(pattern: typeof(Cargo).Name + "_*");
+	        var keys = _server.Keys(pattern: KeyHeader + "_*");
 
             var cachedValues = _database.StringGet(keys.ToArray());
 
@@ -110,7 +90,43 @@ namespace Cache.DAL.Repositories
 		        .ToList();
         }
 
-        private static CachedCargo ConfigureCacheCargo(Cargo entity)
+		public void Configure(Cargo item)
+		{
+			var key = ConfigureCacheKey(item.Id);
+
+			var cachedEntity = ConfigureCacheCargo(item);
+
+			InitCachedCargo(key, cachedEntity);
+		}
+
+		private void CheckIfCachedValueExists(RedisValue value, ref CachedCargo result, string key)
+		{
+			if (!value.HasValue) return;
+
+			result = JsonConvert.DeserializeObject<CachedCargo>(value);
+
+			result.AccessCount++;
+
+			result.LastAccessed = DateTime.UtcNow;
+
+			UpdateCargoInTheCache(key, result);
+		}
+
+		public CachedCargo GetById(int id)
+		{
+			CachedCargo result = null;
+
+			var key = ConfigureCacheKey(id);
+
+			var cachedValue = _database.StringGet(key);
+
+			CheckIfCachedValueExists(cachedValue, ref result, key);
+
+			return result;
+		}
+
+
+		private static CachedCargo ConfigureCacheCargo(Cargo entity)
         {
             var cachedEntity = new CachedCargo
             {
@@ -122,19 +138,25 @@ namespace Cache.DAL.Repositories
             return cachedEntity;
         }
 
-        private void SetCachedEntity(string key, CachedCargo cachedCargo)
+        private void InitCachedCargo(string key, CachedCargo cachedCargo)
         {
-            _database.StringSet(
+	        var serializedObject = JsonConvert.SerializeObject(cachedCargo);
+
+	        var time = TimeSpan.FromMinutes(_settings.ExpirationMinutes);
+
+			_database.StringSet(
                 key,
-                JsonConvert.SerializeObject(cachedCargo),
-                TimeSpan.FromMinutes(_settings.ExpirationMinutes));
+				serializedObject,
+				time);
         }
 
-        private void UpdateCachedEntity(string key, CachedCargo cachedCargo)
+        private void UpdateCargoInTheCache(string key, CachedCargo cachedCargo)
         {
             var expiry = _database.StringGetWithExpiry(key).Expiry;
 
-            _database.StringSet(key, JsonConvert.SerializeObject(cachedCargo), expiry);
+	        var serializedCargo = JsonConvert.SerializeObject(cachedCargo);
+
+			_database.StringSet(key, serializedCargo, expiry);
         }
 
         private static string ConfigureCacheKey(int id)

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Cache.DAL.Entities
 {
     [Table("Cargo")]
-    public partial class Cargo
+    public class Cargo
     {
 		public int Id { get; set; }
 

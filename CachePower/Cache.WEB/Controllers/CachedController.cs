@@ -77,7 +77,7 @@ namespace Cache.WEB.Controllers
 
             var cargo = _mapper.Map<Cargo>(cargoModel);
 
-            _cacheCargoRepository.SetAsCreated(cargo);
+            _cacheCargoRepository.CreateInTheCache(cargo);
 
             return Ok();
         }
