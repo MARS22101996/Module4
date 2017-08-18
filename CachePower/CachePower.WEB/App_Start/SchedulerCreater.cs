@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Cache.DAL.Interfaces;
 using Cache.WEB.Interfaces;
+using Cache.WEB.Schedulers.Jobs;
+using CachePower.WEB.Jobs.Interfaces;
 
 namespace Cache.WEB
 {
@@ -10,13 +12,12 @@ namespace Cache.WEB
     {
         private readonly IScheduler _scheduler;
         private readonly ICacheSettings _settings;
-        private readonly IEnumerable<IJob> _jobs;
+        private  TimeSpan _timeSpan;
 
-        public SchedulerCreater(IScheduler scheduler, ICacheSettings settings, IEnumerable<IJob> jobs)
+        public SchedulerCreater(IScheduler scheduler, ICacheSettings settings)
         {
             _scheduler = scheduler;
             _settings = settings;
-            _jobs = jobs;
         }
 
         public void Configure()
@@ -30,18 +31,22 @@ namespace Cache.WEB
 	    {
 		    if (!_settings.UseWriteBehindStrategy) return;
 
-		    var job = _jobs.First(j => j.Name.Equals("WriteBehindStrategy_Job"));
+		    var job = new  WriteBehindStrategyJob();
 
-		    _scheduler.Act(job.Name, () => job.Run(), TimeSpan.FromMinutes(_settings.WriteBehindSyncInterval));
+		    _timeSpan = TimeSpan.FromMinutes(_settings.WriteBehindSyncInterval);
+
+			_scheduler.Act(job.Name, () => job.Run(), _timeSpan);
 	    }
 
 	    private void CheckIfUseRefreshAheadStrategy()
 	    {
-		    if (!_settings.UseRefreshAheadStrategy) return;
+		    if (!_settings.UseRefreshAheadStrategy) return;  
 
-		    var job = _jobs.First(j => j.Name.Equals("RefreshAheadStrategy"));
+			var job = new RefreshAheadStrategyJob();
 
-		    _scheduler.Act(job.Name, () => job.Run(), TimeSpan.FromMinutes(_settings.UpdateExpirationInterval));
+		    _timeSpan = TimeSpan.FromMinutes(_settings.UpdateExpirationInterval);
+
+			_scheduler.Act(job.Name, () => job.Run(), _timeSpan);
 	    }
 	}
 }

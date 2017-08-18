@@ -15,6 +15,7 @@ using Cache.WEB.Schedulers;
 using Cache.WEB.Schedulers.Jobs;
 using Cache.WEB.Settings;
 using Cache.DAL;
+using CachePower.WEB.Jobs.Interfaces;
 using StackExchange.Redis;
 
 namespace Cache.WEB
