@@ -19,9 +19,9 @@ namespace Cache.WEB
 
         public void Configure()
         {
-	        CheckIfUseUseWriteBehindStrategy();
+			CheckIfUseUseWriteBehindStrategy();
 
-	        CheckIfUseRefreshAheadStrategy();
+			CheckIfUseRefreshAheadStrategy();
         }
 
 	    private void CheckIfUseUseWriteBehindStrategy()

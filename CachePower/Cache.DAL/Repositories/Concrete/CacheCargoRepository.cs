@@ -16,7 +16,7 @@ namespace Cache.DAL.Repositories.Concrete
         private readonly ICacheSettings _settings;
 	    private const string KeyHeader = "Cargo";
 	    private const string ErrorMessage = "This action suits another strategy";
-	    private const string ActionKey = "Add_";
+	    private const string ActionKey = "AddItem_";
 
 
 		public CacheCargoRepository(IServer server, IDatabase database, ICacheSettings settings)
@@ -46,7 +46,7 @@ namespace Cache.DAL.Repositories.Concrete
 
 	        var result = new List<CachedCargo>();
 
-	        var cachedValues = _database.SetScan(ActionKey + KeyHeader).ToList();
+	        var cachedValues = _database.SetScan(ActionKey + KeyHeader, "a*").ToList();
 
 	        while (cachedValues.Any())
 	        {
@@ -55,7 +55,7 @@ namespace Cache.DAL.Repositories.Concrete
 
 		        _database.SetRemove(ActionKey + KeyHeader, cachedValues.ToArray());
 
-		        cachedValues = _database.SetScan(ActionKey + KeyHeader).ToList();
+		        cachedValues = _database.SetScan(ActionKey + KeyHeader, "a*").ToList();
 	        }
 
 	        return result;
@@ -65,7 +65,7 @@ namespace Cache.DAL.Repositories.Concrete
         {
 	        if (_settings.UseWriteBehindStrategy)
 	        {
-		        var key = ActionKey + typeof(Cargo).Name;
+		        var key = ActionKey + KeyHeader;
 
 		        var cachedEntity = ConfigureCacheCargo(entity);
 

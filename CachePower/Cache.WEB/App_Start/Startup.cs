@@ -14,16 +14,16 @@ namespace Cache.WEB
 
 		public void Configuration(IAppBuilder app)
         {
-            Hangfire.GlobalConfiguration.Configuration.UseSqlServerStorage(DbConnection);
+			Hangfire.GlobalConfiguration.Configuration.UseSqlServerStorage(DbConnection);
 
-            app.UseHangfireDashboard();
+			app.UseHangfireDashboard();
 
-            app.UseHangfireServer();
+			app.UseHangfireServer();
 
-            var initializer = (ISchedulerConfigurer)GlobalConfiguration.Configuration
-                .DependencyResolver.GetService(typeof(ISchedulerConfigurer));
+			var initializer = (ISchedulerConfigurer)GlobalConfiguration.Configuration
+				.DependencyResolver.GetService(typeof(ISchedulerConfigurer));
 
-            initializer.Configure();
-        }
+			initializer.Configure();
+		}
     }
 }
