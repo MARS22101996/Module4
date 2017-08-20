@@ -1,5 +1,6 @@
 ﻿using HashCalculator.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -20,6 +21,7 @@ namespace HashCalculator.Calculator.Concrete
         private List<FileInformation> _files;
         private static object thLockMe = new object();
         private FileInformation _file;
+        private ConcurrentQueue<FileInformation> cq = new ConcurrentQueue<FileInformation>();
 
         private List<FileInformation> _filesInfo;
         public List<FileInformation> FilesInfo
@@ -49,33 +51,22 @@ namespace HashCalculator.Calculator.Concrete
             {
                 foreach (var filePath in _filePaths)
                 {
-                    //var task = Task.Run(() =>
-                    //{
-                    //    lock (thLockMe)
-                    //    {
-                    //        _file = CollectInformation(filePath, md5);
-                    //    }
-                    //});
-
-                    //tasks.Add(task);
-
-
-                    _file = CollectInformation(filePath, md5);
+                    tasks.Add(CollectInformation(filePath, md5));
 
                     tasks.Add(RecordResultsInAnXMLFile(_file));
 
                     tasks.Add(InputOfResultsIntoTheControl(_file));
 
                     Task.WaitAll(tasks.ToArray());
-                }
-               
+                }               
             }
         }
 
-        private FileInformation CollectInformation(string filePath, MD5 md5)
+        private Task CollectInformation(string filePath, MD5 md5)
         {
-
-            var info = new FileInformation();
+            var task = Task.Run(() =>
+            {
+                var info = new FileInformation();
 
                 using (var stream = File.OpenRead(filePath))
                 {
@@ -84,18 +75,21 @@ namespace HashCalculator.Calculator.Concrete
                     info.Hash = Encoding.Default.GetString(md5.ComputeHash(stream));
 
                     info.Length = stream.Length;
+
+                    cq.Enqueue(info);
                 }
-          
-            return info;
+            });
+
+            return task;
         }
 
         private Task InputOfResultsIntoTheControl(FileInformation file)
         {
             var task = Task.Run(() =>
             {
-                _files.Add(file);
+               // _files.Add(file);
 
-                FilesInfo = _files;
+                FilesInfo = cq.ToList();
             });
 
             return task;
@@ -105,14 +99,14 @@ namespace HashCalculator.Calculator.Concrete
         {
             var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview.xml";
 
-            if (!File.Exists(path))
-            {
+            //if (!File.Exists(path))
+            //{
                return Serialize(fileInfo, path);
-            }
-            else
-            {
-               return SerializeAppend(fileInfo, path);
-            }
+            //}
+            //else
+            //{
+            //   return SerializeAppend(fileInfo, path);
+            //}
         }
 
         public Task SerializeAppend<FileInformation>(FileInformation obj, string path)
@@ -123,7 +117,7 @@ namespace HashCalculator.Calculator.Concrete
             {
                 FileStream file = File.Open(path, FileMode.Append, FileAccess.Write);
 
-                writer.Serialize(file, obj);
+                writer.Serialize(file, cq.ToList());
 
                 file.Close();
             });
@@ -134,13 +128,15 @@ namespace HashCalculator.Calculator.Concrete
         public Task Serialize<FileInformation>(FileInformation obj, string path)
         {
 
-            var writer = new XmlSerializer(typeof(FileInformation));
+            var writer = new XmlSerializer(typeof(List<FileInformation>));
 
             var task = Task.Run(() =>
             {
                 using (var file = new StreamWriter(path))
                 {
-                    writer.Serialize(file, obj);
+                    var i = cq.ToList();
+
+                    writer.Serialize(file, i);
                 }
             });
 
