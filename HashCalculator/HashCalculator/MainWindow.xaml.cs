@@ -28,9 +28,13 @@ namespace HashCalculator
     /// </summary>
     public partial class MainWindow : Window
     {
+        private FilesCalculatorViewModel _event;
         public MainWindow()
         {
             InitializeComponent();
+
+           // bind the Date to the UI
+            this.DataContext = _event;
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
@@ -39,9 +43,12 @@ namespace HashCalculator
 
             ConfigureFileDialog(openFileDialog);
 
-            var calculator = new FilesCalculator(openFileDialog.FileName);
+            _event = new FilesCalculatorViewModel();
 
-            dataGrid.ItemsSource = calculator.ConfigureFileInfo();
+            _event.ConfigureFileInfo(openFileDialog.FileName);
+
+            dataGrid.ItemsSource = _event.FilesInfo;
+           
         }
 
         private void ConfigureFileDialog(CommonOpenFileDialog openFileDialog)
