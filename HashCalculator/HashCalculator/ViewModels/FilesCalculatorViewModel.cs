@@ -37,6 +37,20 @@ namespace HashCalculator.Calculator.Concrete
             }
         }
 
+        private int _progressValue = 0;
+        public int ProgressValue
+        {
+            get { return _progressValue; }
+            set
+            {
+                if (value == _progressValue)
+                    return;
+
+                _progressValue = value;
+                OnPropertyChanged("ProgressValue");
+            }
+        }
+
         public FilesCalculatorViewModel()
         {           
             _files = new List<FileInformation>();
@@ -58,8 +72,19 @@ namespace HashCalculator.Calculator.Concrete
                     tasks.Add(InputOfResultsIntoTheControl(_file));
 
                     Task.WaitAll(tasks.ToArray());
-                }               
+
+                    tasks.Clear();
+
+                    ProgressValue++;
+                }
+
+                tasks.Add(RecordResultsInAnXMLFile(_file));
+
+                tasks.Add(InputOfResultsIntoTheControl(_file));
+
+                Task.WaitAll(tasks.ToArray());
             }
+
         }
 
         private Task CollectInformation(string filePath, MD5 md5)

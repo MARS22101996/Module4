@@ -41,11 +41,13 @@ namespace HashCalculator
         {
             var openFileDialog = new CommonOpenFileDialog();
 
-            ConfigureFileDialog(openFileDialog);
+            ConfigureFileDialog(openFileDialog);           
 
             _event = new FilesCalculatorViewModel();
-
+          
             _event.ConfigureFileInfo(openFileDialog.FileName);
+
+            calculateProgress.Value = _event.ProgressValue;
 
             dataGrid.ItemsSource = _event.FilesInfo;
            
