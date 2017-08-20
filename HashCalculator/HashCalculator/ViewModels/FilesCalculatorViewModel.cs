@@ -19,6 +19,7 @@ namespace HashCalculator.Calculator.Concrete
         private string[] _filePaths;
         private List<FileInformation> _files;
         private static object thLockMe = new object();
+        private FileInformation _file;
 
         private List<FileInformation> _filesInfo;
         public List<FileInformation> FilesInfo
@@ -42,41 +43,40 @@ namespace HashCalculator.Calculator.Concrete
         {
             _filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
 
+            var tasks = new List<Task>();
+
             using (var md5 = MD5.Create())
             {
-                //foreach (var filePath in _filePaths)
-                //{
-                //    var file = CollectInformation(filePath, md5);
-
-                //    RecordResultsInAnXMLFile(file);
-
-                //    InputOfResultsIntoTheControl(file);
-                //}          
-
-                CancellationTokenSource cts = new CancellationTokenSource();
-                var paralelOptions = new ParallelOptions
+                foreach (var filePath in _filePaths)
                 {
-                    MaxDegreeOfParallelism = 3,
-                    CancellationToken = cts.Token
-                };
-                Parallel.ForEach(_filePaths, paralelOptions,
-                    filePath => 
-                        {
-                            var file = CollectInformation(filePath, md5);
+                    //var task = Task.Run(() =>
+                    //{
+                    //    lock (thLockMe)
+                    //    {
+                    //        _file = CollectInformation(filePath, md5);
+                    //    }
+                    //});
 
-                            RecordResultsInAnXMLFile(file);
+                    //tasks.Add(task);
 
-                            InputOfResultsIntoTheControl(file);
-                        }
-                        );
+
+                    _file = CollectInformation(filePath, md5);
+
+                    tasks.Add(RecordResultsInAnXMLFile(_file));
+
+                    tasks.Add(InputOfResultsIntoTheControl(_file));
+
+                    Task.WaitAll(tasks.ToArray());
+                }
+               
             }
         }
 
         private FileInformation CollectInformation(string filePath, MD5 md5)
         {
+
             var info = new FileInformation();
-            lock (thLockMe)
-            {
+
                 using (var stream = File.OpenRead(filePath))
                 {
                     info.Path = filePath;
@@ -85,55 +85,66 @@ namespace HashCalculator.Calculator.Concrete
 
                     info.Length = stream.Length;
                 }
-            }
-           
+          
             return info;
         }
 
-        private void InputOfResultsIntoTheControl(FileInformation file)
+        private Task InputOfResultsIntoTheControl(FileInformation file)
         {
-            _files.Add(file);
+            var task = Task.Run(() =>
+            {
+                _files.Add(file);
 
-            FilesInfo = _files;
+                FilesInfo = _files;
+            });
+
+            return task;
         }
 
-        private void RecordResultsInAnXMLFile(FileInformation fileInfo)
+        private Task RecordResultsInAnXMLFile(FileInformation fileInfo)
         {
             var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview.xml";
 
             if (!File.Exists(path))
             {
-                Serialize(fileInfo, path);
+               return Serialize(fileInfo, path);
             }
             else
             {
-                SerializeAppend(fileInfo, path);
+               return SerializeAppend(fileInfo, path);
             }
         }
 
-        public static void SerializeAppend<FileInformation>(FileInformation obj, string path)
+        public Task SerializeAppend<FileInformation>(FileInformation obj, string path)
         {
             var writer = new XmlSerializer(typeof(FileInformation));
-            lock (thLockMe)
+
+            var task = Task.Run(() =>
             {
                 FileStream file = File.Open(path, FileMode.Append, FileAccess.Write);
 
                 writer.Serialize(file, obj);
 
                 file.Close();
-            }
+            });
+
+            return task;
         }
 
-        public static void Serialize<FileInformation>(FileInformation obj, string path)
+        public Task Serialize<FileInformation>(FileInformation obj, string path)
         {
+
             var writer = new XmlSerializer(typeof(FileInformation));
-            lock (thLockMe)
+
+            var task = Task.Run(() =>
             {
                 using (var file = new StreamWriter(path))
                 {
                     writer.Serialize(file, obj);
                 }
-            }
+            });
+
+            return task;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
