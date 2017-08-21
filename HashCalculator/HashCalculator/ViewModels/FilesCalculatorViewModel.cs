@@ -15,15 +15,13 @@ namespace HashCalculator.ViewModels
     public class FilesCalculatorViewModel : INotifyPropertyChanged
     {       
         private string[] _filePaths;
-        private List<FileInformation> _files;
-        private static object _thLockMe = new object();
 	    private readonly ConcurrentQueue<FileInformation> _cq;
 
         private List<FileInformation> _filesInfo;
         public List<FileInformation> FilesInfo
         {
             get { return _filesInfo; }
-            set
+	        private set
             {
                 if (value == _filesInfo)
                     return;
@@ -37,7 +35,7 @@ namespace HashCalculator.ViewModels
         public int ProgressValue
         {
             get { return _progressValue; }
-            set
+	        private set
             {
                 if (value == _progressValue)
                     return;
@@ -49,7 +47,8 @@ namespace HashCalculator.ViewModels
 
         public FilesCalculatorViewModel()
         {           
-            _files = new List<FileInformation>();
+            new List<FileInformation>();
+
 			_cq = new ConcurrentQueue<FileInformation>();
 		}
         public void ConfigureFileInfo(string path)
@@ -122,7 +121,7 @@ namespace HashCalculator.ViewModels
             return Serialize(path);
         }
 
-        public Task SerializeAppend(string path)
+	    private Task SerializeAppend(string path)
         {
             var writer = new XmlSerializer(typeof(FileInformation));
 
@@ -138,7 +137,7 @@ namespace HashCalculator.ViewModels
             return task;
         }
 
-        public Task Serialize(string path)
+	    private Task Serialize(string path)
         {
 
             var writer = new XmlSerializer(typeof(List<FileInformation>));
@@ -147,9 +146,7 @@ namespace HashCalculator.ViewModels
             {
                 using (var file = new StreamWriter(path))
                 {
-                    var i = _cq.ToList();
-
-                    writer.Serialize(file, i);
+                    writer.Serialize(file, _cq.ToList());
                 }
             });
 
