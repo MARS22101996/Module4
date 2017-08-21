@@ -1,5 +1,4 @@
-﻿using HashCalculator.Models;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,21 +6,18 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Xml.Serialization;
+using HashCalculator.Models;
 
-namespace HashCalculator.Calculator.Concrete
+namespace HashCalculator.ViewModels
 {
     public class FilesCalculatorViewModel : INotifyPropertyChanged
     {       
         private string[] _filePaths;
         private List<FileInformation> _files;
-        private static object thLockMe = new object();
-        private FileInformation _file;
-        private ConcurrentQueue<FileInformation> cq = new ConcurrentQueue<FileInformation>();
+        private static object _thLockMe = new object();
+	    private readonly ConcurrentQueue<FileInformation> _cq;
 
         private List<FileInformation> _filesInfo;
         public List<FileInformation> FilesInfo
@@ -54,7 +50,8 @@ namespace HashCalculator.Calculator.Concrete
         public FilesCalculatorViewModel()
         {           
             _files = new List<FileInformation>();
-        }
+			_cq = new ConcurrentQueue<FileInformation>();
+		}
         public void ConfigureFileInfo(string path)
         {
             _filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
@@ -67,9 +64,9 @@ namespace HashCalculator.Calculator.Concrete
                 {
                     tasks.Add(CollectInformation(filePath, md5));
 
-                    tasks.Add(RecordResultsInAnXMLFile(_file));
+                    tasks.Add(RecordResultsInAnXmlFile());
 
-                    tasks.Add(InputOfResultsIntoTheControl(_file));
+                    tasks.Add(InputOfResultsIntoTheControl());
 
                     Task.WaitAll(tasks.ToArray());
 
@@ -78,9 +75,9 @@ namespace HashCalculator.Calculator.Concrete
                     ProgressValue++;
                 }
 
-                tasks.Add(RecordResultsInAnXMLFile(_file));
+                tasks.Add(RecordResultsInAnXmlFile());
 
-                tasks.Add(InputOfResultsIntoTheControl(_file));
+                tasks.Add(InputOfResultsIntoTheControl());
 
                 Task.WaitAll(tasks.ToArray());
             }
@@ -101,40 +98,31 @@ namespace HashCalculator.Calculator.Concrete
 
                     info.Length = stream.Length;
 
-                    cq.Enqueue(info);
+                    _cq.Enqueue(info);
                 }
             });
 
             return task;
         }
 
-        private Task InputOfResultsIntoTheControl(FileInformation file)
+        private Task InputOfResultsIntoTheControl()
         {
             var task = Task.Run(() =>
             {
-               // _files.Add(file);
-
-                FilesInfo = cq.ToList();
+                FilesInfo = _cq.ToList();
             });
 
             return task;
         }
 
-        private Task RecordResultsInAnXMLFile(FileInformation fileInfo)
+        private Task RecordResultsInAnXmlFile()
         {
             var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview.xml";
 
-            //if (!File.Exists(path))
-            //{
-               return Serialize(fileInfo, path);
-            //}
-            //else
-            //{
-            //   return SerializeAppend(fileInfo, path);
-            //}
+            return Serialize(path);
         }
 
-        public Task SerializeAppend<FileInformation>(FileInformation obj, string path)
+        public Task SerializeAppend(string path)
         {
             var writer = new XmlSerializer(typeof(FileInformation));
 
@@ -142,7 +130,7 @@ namespace HashCalculator.Calculator.Concrete
             {
                 FileStream file = File.Open(path, FileMode.Append, FileAccess.Write);
 
-                writer.Serialize(file, cq.ToList());
+                writer.Serialize(file, _cq.ToList());
 
                 file.Close();
             });
@@ -150,7 +138,7 @@ namespace HashCalculator.Calculator.Concrete
             return task;
         }
 
-        public Task Serialize<FileInformation>(FileInformation obj, string path)
+        public Task Serialize(string path)
         {
 
             var writer = new XmlSerializer(typeof(List<FileInformation>));
@@ -159,7 +147,7 @@ namespace HashCalculator.Calculator.Concrete
             {
                 using (var file = new StreamWriter(path))
                 {
-                    var i = cq.ToList();
+                    var i = _cq.ToList();
 
                     writer.Serialize(file, i);
                 }
@@ -170,7 +158,7 @@ namespace HashCalculator.Calculator.Concrete
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
+	    private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

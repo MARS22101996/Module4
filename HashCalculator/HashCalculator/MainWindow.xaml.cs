@@ -1,5 +1,4 @@
-﻿using HashCalculator.Calculator.Concrete;
-using HashCalculator.Models;
+﻿using HashCalculator.Models;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -19,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using HashCalculator.ViewModels;
 
 
 namespace HashCalculator
