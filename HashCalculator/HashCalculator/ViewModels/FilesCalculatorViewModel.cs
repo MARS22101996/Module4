@@ -20,6 +20,8 @@ namespace HashCalculator.ViewModels
 	    private ConcurrentQueue<FileInformation> _cq;
 
         private List<FileInformation> _filesInfo;
+
+        private CancellationTokenSource _cancellationTokenSource;
         public List<FileInformation> FilesInfo
         {
             get { return _filesInfo; }
@@ -67,8 +69,15 @@ namespace HashCalculator.ViewModels
         {
             FilesInfo= new List<FileInformation>();
 
-			_cq = new ConcurrentQueue<FileInformation>(); 
-		}
+			_cq = new ConcurrentQueue<FileInformation>();
+
+            _cancellationTokenSource = new CancellationTokenSource();
+        }
+
+        public void Cancel()
+        {
+            _cancellationTokenSource.Cancel();
+        }
         public void ConfigureFileInfo(string path)
         {
             FilesInfo.Clear();
@@ -76,6 +85,8 @@ namespace HashCalculator.ViewModels
             _cq = new ConcurrentQueue<FileInformation>();
 
             ProgressValue = 0;
+
+            RestoreCancellationToken();
 
             _filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
 
@@ -88,11 +99,11 @@ namespace HashCalculator.ViewModels
                 foreach (var filePath in _filePaths)
                 {
 
-                    tasks.Add(CollectInformation(filePath, md5));
+                    tasks.Add(CollectInformation(filePath, md5, _cancellationTokenSource.Token));
 
-                    tasks.Add(RecordResultsInAnXmlFile());
+                    tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
 
-                    tasks.Add(InputOfResultsIntoTheControl());
+                    tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
 
                     Task.WaitAll(tasks.ToArray());
 
@@ -101,16 +112,16 @@ namespace HashCalculator.ViewModels
                     ProgressValue++;
                 }
 
-                tasks.Add(RecordResultsInAnXmlFile());
+                tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
 
-                tasks.Add(InputOfResultsIntoTheControl());
+                tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
 
                 Task.WaitAll(tasks.ToArray());
             }
 
         }
 
-        private Task CollectInformation(string filePath, MD5 md5)
+        private Task CollectInformation(string filePath, MD5 md5,CancellationToken cancellationToken)
         {
             var task = Task.Run(() =>
             {
@@ -126,12 +137,12 @@ namespace HashCalculator.ViewModels
 
                     _cq.Enqueue(info);
                 }
-            });
+            }, cancellationToken);
 
             return task;
         }
 
-        private Task InputOfResultsIntoTheControl()
+        private Task InputOfResultsIntoTheControl(CancellationToken cancellationToken)
         {
             var task = Task.Run(() =>
             {
@@ -139,19 +150,19 @@ namespace HashCalculator.ViewModels
                 {
                     FilesInfo = _cq.ToList();                                  
                 }
-            });
+            }, cancellationToken);
 
             return task;
         }
 
-        private Task RecordResultsInAnXmlFile()
+        private Task RecordResultsInAnXmlFile(CancellationToken cancellationToken)
         {
             var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview.xml";
 
-            return Serialize(path);
+            return Serialize(path, cancellationToken);
         }
 
-	    private Task SerializeAppend(string path)
+	    private Task SerializeAppend(string path, CancellationToken cancellationToken)
         {
             var writer = new XmlSerializer(typeof(FileInformation));
 
@@ -162,12 +173,12 @@ namespace HashCalculator.ViewModels
                 writer.Serialize(file, _cq.ToList());
 
                 file.Close();
-            });
+            }, cancellationToken);
 
             return task;
         }
 
-	    private Task Serialize(string path)
+	    private Task Serialize(string path,CancellationToken cancellationToken)
         {
 
             var writer = new XmlSerializer(typeof(List<FileInformation>));
@@ -178,13 +189,20 @@ namespace HashCalculator.ViewModels
                 {
                     writer.Serialize(file, _cq.ToList());
                 }
-            });
+            }, cancellationToken);
 
             return task;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void RestoreCancellationToken()
+        {
+            if (_cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource = new CancellationTokenSource();
+            }
+        }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

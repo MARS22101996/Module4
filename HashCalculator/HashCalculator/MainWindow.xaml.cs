@@ -21,8 +21,8 @@ namespace HashCalculator
             DataContext = _event;     
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
+        private async void button_Click(object sender, RoutedEventArgs e)
+        {           
             var openFileDialog = new CommonOpenFileDialog();
 
             ConfigureFileDialog(openFileDialog);          
@@ -37,6 +37,11 @@ namespace HashCalculator
             openFileDialog.IsFolderPicker = true;
 
             openFileDialog.ShowDialog();
+        }
+
+        private async void buttonCancel_Click(object sender, RoutedEventArgs e)
+        {
+            _event.Cancel();          
         }
     }
 }
