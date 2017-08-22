@@ -8,7 +8,7 @@
         Title="MainWindow" Height="800" Width="1000">
     <Grid>
         <Button x:Name="button" Content="Choose directory" HorizontalAlignment="Center" Margin="381,17,411,0" VerticalAlignment="Top" Width="200" Click="button_Click" Height="50"/>
-        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Height="590" Width="949"/>
-        <ProgressBar x:Name="calculateProgress" HorizontalAlignment="Left" Height="28" Margin="10,113,0,0" VerticalAlignment="Top" Width="949"/>
+        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Height="590" Width="949"  ItemsSource="{Binding Path=FilesInfo, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="True"/>
+        <ProgressBar x:Name="calculateProgress" HorizontalAlignment="Left" Height="28" Margin="10,113,0,0" VerticalAlignment="Top" Width="949"  Maximum="{Binding Path=ProgressMax, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Path=ProgressValue, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
     </Grid>
 </Window>

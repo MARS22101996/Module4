@@ -9,25 +9,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using HashCalculator.Models;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace HashCalculator.ViewModels
 {
     public class FilesCalculatorViewModel : INotifyPropertyChanged
     {       
         private string[] _filePaths;
-	    private readonly ConcurrentQueue<FileInformation> _cq;
+	    private ConcurrentQueue<FileInformation> _cq;
 
         private List<FileInformation> _filesInfo;
         public List<FileInformation> FilesInfo
         {
             get { return _filesInfo; }
-	        private set
+	        set
             {
-                if (value == _filesInfo)
-                    return;
-
                 _filesInfo = value;
-                OnPropertyChanged("FilesInfo");
+                if (null != this.PropertyChanged)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("FilesInfo"));
+                }
             }
         }
 
@@ -35,7 +37,7 @@ namespace HashCalculator.ViewModels
         public int ProgressValue
         {
             get { return _progressValue; }
-	        private set
+	        set
             {
                 if (value == _progressValue)
                     return;
@@ -45,15 +47,39 @@ namespace HashCalculator.ViewModels
             }
         }
 
-        public FilesCalculatorViewModel()
-        {           
-            new List<FileInformation>();
+        private int _progressMax = 100;
+        public int ProgressMax
+        {
+            get { return _progressMax; }
+            set
+            {
+                if (value == _progressMax)
+                    return;
 
-			_cq = new ConcurrentQueue<FileInformation>();
+                _progressMax= value;
+                OnPropertyChanged("ProgressMax");
+            }
+        }
+
+
+
+        public FilesCalculatorViewModel()
+        {
+            FilesInfo= new List<FileInformation>();
+
+			_cq = new ConcurrentQueue<FileInformation>(); 
 		}
         public void ConfigureFileInfo(string path)
         {
+            FilesInfo.Clear();
+
+            _cq = new ConcurrentQueue<FileInformation>();
+
+            ProgressValue = 0;
+
             _filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
+
+            ProgressMax = _filePaths.Length;
 
             var tasks = new List<Task>();
 
@@ -61,6 +87,7 @@ namespace HashCalculator.ViewModels
             {
                 foreach (var filePath in _filePaths)
                 {
+
                     tasks.Add(CollectInformation(filePath, md5));
 
                     tasks.Add(RecordResultsInAnXmlFile());
@@ -108,7 +135,10 @@ namespace HashCalculator.ViewModels
         {
             var task = Task.Run(() =>
             {
-                FilesInfo = _cq.ToList();
+                if (_cq.Count != 0)
+                {
+                    FilesInfo = _cq.ToList();                                  
+                }
             });
 
             return task;
@@ -155,7 +185,8 @@ namespace HashCalculator.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-	    private void OnPropertyChanged(string propertyName)
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
