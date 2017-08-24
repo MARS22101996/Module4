@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using HashCalculator.ViewModels;
+using Microsoft.Practices.Unity;
 
 namespace HashCalculator
 {
@@ -12,36 +13,42 @@ namespace HashCalculator
     {
         private FilesCalculatorViewModel _event;
 
+        //[Dependency]
+        //public FilesCalculatorViewModel ViewModel
+        //{
+        //    set { DataContext = value; }
+        //}
+
         public MainWindow()
         {
             InitializeComponent();
 
             _event = new FilesCalculatorViewModel();
 
-            DataContext = _event;     
+            DataContext = _event;
         }
 
-        private async void button_Click(object sender, RoutedEventArgs e)
-        {           
-            var openFileDialog = new CommonOpenFileDialog();
+        //private async void button_Click(object sender, RoutedEventArgs e)
+        //{           
+        //    var openFileDialog = new CommonOpenFileDialog();
 
-            ConfigureFileDialog(openFileDialog);          
+        //    ConfigureFileDialog(openFileDialog);          
 
-            _event.ConfigureFileInfo(openFileDialog.FileName);                        
-        }
+        //    _event.ConfigureFileInfo(openFileDialog.FileName);                        
+        //}
 
-        private void ConfigureFileDialog(CommonOpenFileDialog openFileDialog)
-        {
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        //private void ConfigureFileDialog(CommonOpenFileDialog openFileDialog)
+        //{
+        //    openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            openFileDialog.IsFolderPicker = true;
+        //    openFileDialog.IsFolderPicker = true;
 
-            openFileDialog.ShowDialog();
-        }
+        //    openFileDialog.ShowDialog();
+        //}
 
-        private async void buttonCancel_Click(object sender, RoutedEventArgs e)
-        {
-            _event.Cancel();          
-        }
+        //private async void buttonCancel_Click(object sender, RoutedEventArgs e)
+        //{
+        //    _event.Cancel();          
+        //}
     }
 }

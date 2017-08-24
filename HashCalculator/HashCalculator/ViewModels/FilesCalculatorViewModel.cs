@@ -11,6 +11,9 @@ using System.Xml.Serialization;
 using HashCalculator.Models;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Windows.Input;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using FileProcessor.Commands;
 
 namespace HashCalculator.ViewModels
 {
@@ -18,6 +21,10 @@ namespace HashCalculator.ViewModels
     {       
         private string[] _filePaths;
 	    private ConcurrentQueue<FileInformation> _cq;
+
+        private ICommand _scanCommand;
+
+        private ICommand _cancelCommand;
 
         private List<FileInformation> _filesInfo;
 
@@ -63,6 +70,20 @@ namespace HashCalculator.ViewModels
             }
         }
 
+        public ICommand ScanCommand => _scanCommand ?? (_scanCommand = new Command(parameter =>
+        {
+            RestoreCancellationToken();
+            var path = OpenDirectory();
+            if (!string.IsNullOrEmpty(path))
+            {
+                Task.Run(() => ConfigureFileInfo(path));
+            }
+        }));
+
+        public ICommand CancelCommand => _cancelCommand ?? (_cancelCommand = new Command(parameter =>
+        {
+            _cancellationTokenSource.Cancel();
+        }));
 
 
         public FilesCalculatorViewModel()
@@ -121,6 +142,27 @@ namespace HashCalculator.ViewModels
 
         }
 
+        private string OpenDirectory()
+        {
+            string path = null;
+
+            var openFileDialog = new CommonOpenFileDialog();
+
+            ConfigureFileDialog(openFileDialog);
+
+            path = openFileDialog.FileName;
+
+            return path;
+        }
+
+        private void ConfigureFileDialog(CommonOpenFileDialog openFileDialog)
+        {
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            openFileDialog.IsFolderPicker = true;
+
+            openFileDialog.ShowDialog();
+        }
         private Task CollectInformation(string filePath, MD5 md5,CancellationToken cancellationToken)
         {
             var task = Task.Run(() =>
