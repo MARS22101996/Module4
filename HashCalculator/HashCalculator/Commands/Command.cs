@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace FileProcessor.Commands
+namespace HashCalculator.Commands
 {
     public class Command : ICommand
     {

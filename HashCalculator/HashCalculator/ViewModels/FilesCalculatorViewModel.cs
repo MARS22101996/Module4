@@ -12,248 +12,236 @@ using HashCalculator.Models;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Input;
+using HashCalculator.Commands;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using FileProcessor.Commands;
 
 namespace HashCalculator.ViewModels
 {
-    public class FilesCalculatorViewModel : INotifyPropertyChanged
-    {       
-        private string[] _filePaths;
-	    private ConcurrentQueue<FileInformation> _cq;
+	public class FilesCalculatorViewModel : INotifyPropertyChanged
+	{
+		private string[] _filePaths;
 
-        private ICommand _scanCommand;
+		private ConcurrentQueue<FileInformation> _concurrentQueue;
 
-        private ICommand _cancelCommand;
+		private ICommand _calculateCommand;
 
-        private List<FileInformation> _filesInfo;
+		private ICommand _cancelCommand;
 
-        private CancellationTokenSource _cancellationTokenSource;
-        public List<FileInformation> FilesInfo
-        {
-            get { return _filesInfo; }
-	        set
-            {
-                _filesInfo = value;
-                if (null != this.PropertyChanged)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("FilesInfo"));
-                }
-            }
-        }
+		private List<FileInformation> _filesInfo;
 
-        private int _progressValue = 0;
-        public int ProgressValue
-        {
-            get { return _progressValue; }
-	        set
-            {
-                if (value == _progressValue)
-                    return;
+		private CancellationTokenSource _cancellationTokenSource;
 
-                _progressValue = value;
-                OnPropertyChanged("ProgressValue");
-            }
-        }
+		private const string XmlFileName = "\\SerializationOverview.xml";
 
-        private int _progressMax = 100;
-        public int ProgressMax
-        {
-            get { return _progressMax; }
-            set
-            {
-                if (value == _progressMax)
-                    return;
+		public List<FileInformation> FilesInfo
+		{
+			get { return _filesInfo; }
+			set
+			{
+				_filesInfo = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FilesInfo"));
+			}
+		}
 
-                _progressMax= value;
-                OnPropertyChanged("ProgressMax");
-            }
-        }
+		private int _progressValue;
+		public int ProgressValue
+		{
+			get { return _progressValue; }
+			set
+			{
+				if (value == _progressValue)
+					return;
 
-        public ICommand ScanCommand => _scanCommand ?? (_scanCommand = new Command(parameter =>
-        {
-            RestoreCancellationToken();
-            var path = OpenDirectory();
-            if (!string.IsNullOrEmpty(path))
-            {
-                Task.Run(() => ConfigureFileInfo(path));
-            }
-        }));
+				_progressValue = value;
+				OnPropertyChanged();
+			}
+		}
 
-        public ICommand CancelCommand => _cancelCommand ?? (_cancelCommand = new Command(parameter =>
-        {
-            _cancellationTokenSource.Cancel();
-        }));
+		private int _progressMax = 100;
+		public int ProgressMax
+		{
+			get { return _progressMax; }
+			set
+			{
+				if (value == _progressMax)
+					return;
+
+				_progressMax = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand CalculateCommand => _calculateCommand ?? (_calculateCommand = new Command(parameter =>
+		{
+			RestoreToken();
+
+			var path = OpenFileDialog();
+
+			if (!string.IsNullOrEmpty(path))
+			{
+				Task.Run(() => ConfigureFileInfo(path));
+			}
+		}));
+
+		public ICommand CancelCommand => _cancelCommand ?? (_cancelCommand = new Command(parameter =>
+		{
+			Cancel();
+		}));
 
 
-        public FilesCalculatorViewModel()
-        {
-            FilesInfo= new List<FileInformation>();
+		public FilesCalculatorViewModel()
+		{
+			FilesInfo = new List<FileInformation>();
 
-			_cq = new ConcurrentQueue<FileInformation>();
+			_concurrentQueue = new ConcurrentQueue<FileInformation>();
 
-            _cancellationTokenSource = new CancellationTokenSource();
-        }
+			_cancellationTokenSource = new CancellationTokenSource();
+		}
 
-        public void Cancel()
-        {
-            _cancellationTokenSource.Cancel();
-        }
-        public void ConfigureFileInfo(string path)
-        {
-            ConfigureStartData();
-                
-            RestoreCancellationToken();
+		private void Cancel()
+		{
+			_cancellationTokenSource.Cancel();
+		}
 
-            _filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
+		private void ConfigureFileInfo(string path)
+		{
+			ConfigureStartData();
 
-            ProgressMax = _filePaths.Length;
+			RestoreToken();
 
-            var tasks = new List<Task>();
+			_filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
 
-            using (var md5 = MD5.Create())
-            {
-                foreach (var filePath in _filePaths)
-                {
+			ProgressMax = _filePaths.Length;
 
-                    tasks.Add(CollectInformation(filePath, md5, _cancellationTokenSource.Token));
+			var tasks = new List<Task>();
 
-                    tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
+			using (var md5 = MD5.Create())
+			{
+				foreach (var filePath in _filePaths)
+				{
 
-                    tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
+					tasks.Add(CollectInformation(filePath, md5, _cancellationTokenSource.Token));
 
-                    Task.WaitAll(tasks.ToArray());
+					tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
 
-                    tasks.Clear();
+					tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
 
-                    ProgressValue++;
-                }
+					Task.WaitAll(tasks.ToArray());
 
-                tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
+					tasks.Clear();
 
-                tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
+					ProgressValue++;
+				}
 
-                Task.WaitAll(tasks.ToArray());
-            }
+				tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
 
-        }
+				tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
 
-        private void ConfigureStartData()
-        {
-            FilesInfo.Clear();
+				Task.WaitAll(tasks.ToArray());
+			}
 
-            _cq = new ConcurrentQueue<FileInformation>();
+		}
 
-            ProgressValue = 0;
+		private void ConfigureStartData()
+		{
+			FilesInfo.Clear();
 
-        }
-        private string OpenDirectory()
-        {
-            string path = null;
+			_concurrentQueue = new ConcurrentQueue<FileInformation>();
 
-            var openFileDialog = new CommonOpenFileDialog();
+			ProgressValue = 0;
 
-            ConfigureFileDialog(openFileDialog);
+		}
+		private string OpenFileDialog()
+		{
+			var openFileDialog = new CommonOpenFileDialog();
 
-            path = openFileDialog.FileName;
+			ConfigureFileDialog(openFileDialog);
 
-            return path;
-        }
+			var path = openFileDialog.FileName;
 
-        private void ConfigureFileDialog(CommonOpenFileDialog openFileDialog)
-        {
-            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			return path;
+		}
 
-            openFileDialog.IsFolderPicker = true;
+		private void ConfigureFileDialog(CommonOpenFileDialog openFileDialog)
+		{
+			openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            openFileDialog.ShowDialog();
-        }
-        private Task CollectInformation(string filePath, MD5 md5,CancellationToken cancellationToken)
-        {
-            var task = Task.Run(() =>
-            {
-                var info = new FileInformation();
+			openFileDialog.IsFolderPicker = true;
 
-                using (var stream = File.OpenRead(filePath))
-                {
-                    info.Path = filePath;
+			openFileDialog.ShowDialog();
+		}
+		private Task CollectInformation(string filePath, HashAlgorithm hashAlgorithm, CancellationToken cancellationToken)
+		{
+			var task = Task.Run(() =>
+			{
+				var info = new FileInformation();
 
-                    info.Hash = Encoding.Default.GetString(md5.ComputeHash(stream));
+				using (var stream = File.OpenRead(filePath))
+				{
+					info.Path = filePath;
 
-                    info.Length = stream.Length;
+					info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
 
-                    _cq.Enqueue(info);
-                }
-            }, cancellationToken);
+					info.Length = stream.Length;
 
-            return task;
-        }
+					_concurrentQueue.Enqueue(info);
+				}
+			}, cancellationToken);
 
-        private Task InputOfResultsIntoTheControl(CancellationToken cancellationToken)
-        {
-            var task = Task.Run(() =>
-            {
-                if (_cq.Count != 0)
-                {
-                    FilesInfo = _cq.ToList();                                  
-                }
-            }, cancellationToken);
+			return task;
+		}
 
-            return task;
-        }
+		private Task InputOfResultsIntoTheControl(CancellationToken cancellationToken)
+		{
+			var task = Task.Run(() =>
+			{
+				if (_concurrentQueue.Count != 0)
+				{
+					FilesInfo = _concurrentQueue.ToList();
+				}
+			}, cancellationToken);
 
-        private Task RecordResultsInAnXmlFile(CancellationToken cancellationToken)
-        {
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "//SerializationOverview.xml";
+			return task;
+		}
 
-            return Serialize(path, cancellationToken);
-        }
+		private Task RecordResultsInAnXmlFile(CancellationToken cancellationToken)
+		{
+			var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-	    private Task SerializeAppend(string path, CancellationToken cancellationToken)
-        {
-            var writer = new XmlSerializer(typeof(FileInformation));
+			var path = folder + XmlFileName;
 
-            var task = Task.Run(() =>
-            {
-                FileStream file = File.Open(path, FileMode.Append, FileAccess.Write);
+			return Serialize(path, cancellationToken);
+		}
 
-                writer.Serialize(file, _cq.ToList());
+		private Task Serialize(string path, CancellationToken cancellationToken)
+		{
 
-                file.Close();
-            }, cancellationToken);
+			var writer = new XmlSerializer(typeof(List<FileInformation>));
 
-            return task;
-        }
+			var task = Task.Run(() =>
+			{
+				using (var file = new StreamWriter(path))
+				{
+					writer.Serialize(file, _concurrentQueue.ToList());
+				}
+			}, cancellationToken);
 
-	    private Task Serialize(string path,CancellationToken cancellationToken)
-        {
+			return task;
+		}
 
-            var writer = new XmlSerializer(typeof(List<FileInformation>));
+		public event PropertyChangedEventHandler PropertyChanged;
 
-            var task = Task.Run(() =>
-            {
-                using (var file = new StreamWriter(path))
-                {
-                    writer.Serialize(file, _cq.ToList());
-                }
-            }, cancellationToken);
+		private void RestoreToken()
+		{
+			if (_cancellationTokenSource.IsCancellationRequested)
+			{
+				_cancellationTokenSource = new CancellationTokenSource();
+			}
+		}
 
-            return task;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void RestoreCancellationToken()
-        {
-            if (_cancellationTokenSource.IsCancellationRequested)
-            {
-                _cancellationTokenSource = new CancellationTokenSource();
-            }
-        }
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-    }
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+	}
 }

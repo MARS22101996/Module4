@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="1000">
     <Grid>
-        <Button x:Name="buttonScan" Content="Choose directory" HorizontalAlignment="Center" Margin="248,32,544,0" VerticalAlignment="Top" Width="200" Height="50" Command="{Binding Path=ScanCommand}"/>
+        <Button x:Name="buttonScan" Content="Choose directory" HorizontalAlignment="Center" Margin="248,32,544,0" VerticalAlignment="Top" Width="200" Height="50" Command="{Binding Path=CalculateCommand}"/>
         <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Height="590" Width="949"  ItemsSource="{Binding Path=FilesInfo, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="True"/>
         <ProgressBar x:Name="calculateProgress" HorizontalAlignment="Left" Height="28" Margin="10,113,0,0" VerticalAlignment="Top" Width="949"  Maximum="{Binding Path=ProgressMax, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Path=ProgressValue, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
         <Button x:Name="buttonCancel" Content="Cancel" HorizontalAlignment="Center" Margin="494,32,298,0" VerticalAlignment="Top" Width="200" Height="50" Command="{Binding Path=CancelCommand}"/>
