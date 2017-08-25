@@ -6,6 +6,7 @@ namespace FileProcessor.Commands
     public class Command : ICommand
     {
         private readonly Action<object> _execute;
+
         private readonly Func<object, bool> _canExecute;
 
         public event EventHandler CanExecuteChanged

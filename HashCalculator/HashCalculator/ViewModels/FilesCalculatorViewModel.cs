@@ -101,12 +101,8 @@ namespace HashCalculator.ViewModels
         }
         public void ConfigureFileInfo(string path)
         {
-            FilesInfo.Clear();
-
-            _cq = new ConcurrentQueue<FileInformation>();
-
-            ProgressValue = 0;
-
+            ConfigureStartData();
+                
             RestoreCancellationToken();
 
             _filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
@@ -142,6 +138,15 @@ namespace HashCalculator.ViewModels
 
         }
 
+        private void ConfigureStartData()
+        {
+            FilesInfo.Clear();
+
+            _cq = new ConcurrentQueue<FileInformation>();
+
+            ProgressValue = 0;
+
+        }
         private string OpenDirectory()
         {
             string path = null;

@@ -11,44 +11,15 @@ namespace HashCalculator
     /// </summary>
     public partial class MainWindow : Window
     {
-        private FilesCalculatorViewModel _event;
-
-        //[Dependency]
-        //public FilesCalculatorViewModel ViewModel
-        //{
-        //    set { DataContext = value; }
-        //}
+        private FilesCalculatorViewModel _model;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _event = new FilesCalculatorViewModel();
+            _model = new FilesCalculatorViewModel();
 
-            DataContext = _event;
+            DataContext = _model;
         }
-
-        //private async void button_Click(object sender, RoutedEventArgs e)
-        //{           
-        //    var openFileDialog = new CommonOpenFileDialog();
-
-        //    ConfigureFileDialog(openFileDialog);          
-
-        //    _event.ConfigureFileInfo(openFileDialog.FileName);                        
-        //}
-
-        //private void ConfigureFileDialog(CommonOpenFileDialog openFileDialog)
-        //{
-        //    openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-        //    openFileDialog.IsFolderPicker = true;
-
-        //    openFileDialog.ShowDialog();
-        //}
-
-        //private async void buttonCancel_Click(object sender, RoutedEventArgs e)
-        //{
-        //    _event.Cancel();          
-        //}
     }
 }
