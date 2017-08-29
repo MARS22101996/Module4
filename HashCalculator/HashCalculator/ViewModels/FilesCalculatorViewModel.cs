@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using HashCalculator.BLL.Models;
 using HashCalculator.BLL.Services;
@@ -22,15 +19,12 @@ namespace HashCalculator.ViewModels
 	{
 		private string[] _filePaths;
 
-		//private ObservableCollection<FileInformation> _filesCollection;
-
 		private ICommand _calculateCommand;
 
 		private ICommand _cancelCommand;
 
 		private List<FileInformation> _filesInfo;
 
-		private CancellationTokenSource _cancellationTokenSource;
 
 		private readonly object _lockObject = new object();
 
@@ -79,9 +73,7 @@ namespace HashCalculator.ViewModels
 		}
 
 		public ICommand CalculateCommand => _calculateCommand ?? (_calculateCommand = new Command(parameter =>
-		{
-			_calculatorService.RestoreToken();
-
+		{		
 			var path = OpenFileDialog();
 
 			if (!string.IsNullOrEmpty(path))
@@ -90,28 +82,21 @@ namespace HashCalculator.ViewModels
 			}
 		}));
 
-		public ICommand CancelCommand => _cancelCommand ?? (_cancelCommand = new Command(parameter => { Cancel(); }));
+		public ICommand CancelCommand => _cancelCommand ?? (_cancelCommand = new Command(parameter => { _calculatorService.Cancel(); }));
 
 
 		public FilesCalculatorViewModel()
 		{
 			FilesInfo = new List<FileInformation>();
 
-			//_filesCollection = new ObservableCollection<FileInformation>();
-
-			_cancellationTokenSource = new CancellationTokenSource();
-
-			_calculatorService = new CalculatorService(_cancellationTokenSource);
-		}
-
-		private void Cancel()
-		{
-			_cancellationTokenSource.Cancel();
+			_calculatorService = new CalculatorService();
 		}
 
 		private void ConfigureFileInfo(string path)
 		{
 			ConfigureStartData();
+
+			_calculatorService.ClearXml();
 
 			_calculatorService.RestoreToken();
 
@@ -125,11 +110,11 @@ namespace HashCalculator.ViewModels
 				{
 					var info = _calculatorService.GetFileInfo(stream, filePath);
 
-					InputOfResultsIntoTheControl(info, _cancellationTokenSource.Token);
+					 InputOfResultsIntoTheControl(info, _calculatorService.CancelToken.Token);
 
-					_calculatorService.RecordResultsInAnXmlFile(_cancellationTokenSource.Token);
+					 _calculatorService.RecordResultsInAnXmlFile(_calculatorService.CancelToken.Token);
 
-					WriteToTheProgressBar(_cancellationTokenSource.Token);
+					 WriteToTheProgressBar(_calculatorService.CancelToken.Token);
 				}
 			}
 		}
@@ -163,83 +148,24 @@ namespace HashCalculator.ViewModels
 			openFileDialog.ShowDialog();
 		}
 
-		//private FileInformation GetFileInfo(Stream stream, string filePath)
-		//{
-		//	var info = new FileInformation();
-
-		//	using (var hashAlgorithm = MD5.Create())
-		//	{
-		//		info.Path = filePath;
-
-		//		info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
-
-		//		info.Length = stream.Length;
-
-		//		stream.Close();
-
-		//		hashAlgorithm.Clear();
-		//	}
-
-		//	return info;
-		//}
-
-		private Task InputOfResultsIntoTheControl(FileInformation file, CancellationToken cancellationToken)
+		private void InputOfResultsIntoTheControl(FileInformation file, CancellationToken cancellationToken)
 		{
-			var task = Task.Run(() =>
+			Task.Run(() =>
 			{
-				_calculatorService.Add(file);
+				_calculatorService.AddFile(file);
 
-				FilesInfo = _calculatorService.GetFiles().ToList();
+				FilesInfo = _calculatorService.Files.ToList();
 
 			}, cancellationToken);
-
-
-			return task;
 		}
 
-		//private Task RecordResultsInAnXmlFile(CancellationToken cancellationToken)
-		//{
-		//	var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-		//	var path = folder + XmlFileName;
-
-		//	return Serialize(path, cancellationToken);
-		//}
-
-		//private Task Serialize(string path, CancellationToken cancellationToken)
-		//{
-		//	var writer = new XmlSerializer(typeof(List<FileInformation>));
-
-		//	var task = Task.Run(() =>
-		//	{
-		//		lock (_lockObject)
-		//		{
-		//			using (var file = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-		//			{
-		//				writer.Serialize(file, _filesCollection.ToList());
-		//			}
-		//		}
-		//	}, cancellationToken);
-
-		//	return task;
-		//}
-
-		private Task WriteToTheProgressBar(CancellationToken cancellationToken)
+		private void WriteToTheProgressBar(CancellationToken cancellationToken)
 		{
-			var task = Task.Run(() => ProgressValue++, cancellationToken);
-
-			return task;
+			Task.Run(() => Application.Current.Dispatcher.Invoke(() =>
+				ProgressValue++), cancellationToken);
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
-
-		//private void RestoreToken()
-		//{
-		//	if (_cancellationTokenSource.IsCancellationRequested)
-		//	{
-		//		_cancellationTokenSource = new CancellationTokenSource();
-		//	}
-		//}
 
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{

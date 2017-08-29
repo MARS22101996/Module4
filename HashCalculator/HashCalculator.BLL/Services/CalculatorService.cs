@@ -17,18 +17,21 @@ namespace HashCalculator.BLL.Services
 	{
 		private ObservableCollection<FileInformation> _filesCollection;
 
-		//private List<FileInformation> _filesInfo;
-
 		private CancellationTokenSource _cancellationTokenSource;
 
 		private readonly object _lockObject = new object();
 
 		private const string XmlFileName = "\\SerializationOverview.xml";
 
-		public CalculatorService(CancellationTokenSource cancellationTokenSource)
+		public ObservableCollection<FileInformation> Files => _filesCollection;
+
+		public CancellationTokenSource CancelToken => _cancellationTokenSource;
+
+		public CalculatorService()
 		{
-			_filesCollection = new ObservableCollection<FileInformation>();		
-			_cancellationTokenSource = cancellationTokenSource;
+			_filesCollection = new ObservableCollection<FileInformation>();
+
+			_cancellationTokenSource = new CancellationTokenSource();
 		}
 
 		public void RestoreToken()
@@ -59,35 +62,16 @@ namespace HashCalculator.BLL.Services
 			return info;
 		}
 
-		//public Task InputOfResultsIntoTheControl(FileInformation file, CancellationToken cancellationToken)
-		//{
-		//	var task = Task.Run(() =>
-		//	{
-		//		_filesCollection.Add(file);
-
-		//		_filesInfo = _filesCollection.ToList();
-
-		//	}, cancellationToken);
-
-
-		//	return task;
-		//}
-
-		public Task RecordResultsInAnXmlFile(CancellationToken cancellationToken)
+		
+		public void RecordResultsInAnXmlFile(CancellationToken cancellationToken)
 		{
+			var writer = new XmlSerializer(typeof(List<FileInformation>));
+
 			var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
 			var path = folder + XmlFileName;
 
-			return Serialize(path, cancellationToken);
-		}
-
-
-		public Task Serialize(string path, CancellationToken cancellationToken)
-		{
-			var writer = new XmlSerializer(typeof(List<FileInformation>));
-
-			var task = Task.Run(() =>
+			Task.Run(() =>
 			{
 				lock (_lockObject)
 				{
@@ -97,24 +81,31 @@ namespace HashCalculator.BLL.Services
 					}
 				}
 			}, cancellationToken);
-
-			return task;
 		}
 
-		private void Cancel()
+
+		public void ClearXml()
+		{
+			var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+			var path = folder + XmlFileName;
+
+			var serializer = new XmlSerializer(typeof(List<FileInformation>));
+			using (var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+			{
+				stream.SetLength(0);
+				serializer.Serialize(stream, new List<FileInformation>());
+			}
+		}
+
+		public void Cancel()
 		{
 			_cancellationTokenSource.Cancel();
 		}
 
-		public void Add(FileInformation file)
+		public void AddFile(FileInformation file)
 		{
 			_filesCollection.Add(file);
-		}
-
-
-		public ObservableCollection<FileInformation> GetFiles()
-		{
-			return _filesCollection;
 		}
 
 		public void ResetCollection()
