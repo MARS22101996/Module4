@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Xml.Serialization;
 using HashCalculator.Models;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using HashCalculator.Commands;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -21,7 +23,7 @@ namespace HashCalculator.ViewModels
 	{
 		private string[] _filePaths;
 
-		private ConcurrentQueue<FileInformation> _concurrentQueue;
+		private ObservableCollection<FileInformation> _concurrentQueue;
 
 		private ICommand _calculateCommand;
 
@@ -93,7 +95,7 @@ namespace HashCalculator.ViewModels
 		{
 			FilesInfo = new List<FileInformation>();
 
-			_concurrentQueue = new ConcurrentQueue<FileInformation>();
+			_concurrentQueue = new ObservableCollection<FileInformation>();
 
 			_cancellationTokenSource = new CancellationTokenSource();
 		}
@@ -111,34 +113,42 @@ namespace HashCalculator.ViewModels
 
 			_filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
 
+			var i = _filePaths.Last();
+
 			ProgressMax = _filePaths.Length;
 
-			var tasks = new List<Task>();
+			//var tasks = new List<Task>();
 
-			using (var md5 = MD5.Create())
-			{
+			//using (var md5 = MD5.Create())
+			//{
 				foreach (var filePath in _filePaths)
 				{
+					using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+					{
+						var info = GetFileInfo(stream, filePath);
 
-					tasks.Add(CollectInformation(filePath, md5, _cancellationTokenSource.Token));
+					//CollectInformation(filePath, md5, _cancellationTokenSource.Token);
+					InputOfResultsIntoTheControl(info, _cancellationTokenSource.Token);
 
-					tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
+					RecordResultsInAnXmlFile(_cancellationTokenSource.Token);
 
-					tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
-
-					Task.WaitAll(tasks.ToArray());
-
-					tasks.Clear();
-
-					ProgressValue++;
+					Task.Run(() => ProgressValue++, _cancellationTokenSource.Token);
 				}
 
-				tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
 
-				tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
+					//Task.WaitAll(tasks.ToArray());
 
-				Task.WaitAll(tasks.ToArray());
-			}
+					//tasks.Clear();
+
+					
+				}
+
+				//tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
+
+				//tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
+
+				//Task.WaitAll(tasks.ToArray());
+			//}
 
 		}
 
@@ -146,7 +156,7 @@ namespace HashCalculator.ViewModels
 		{
 			FilesInfo.Clear();
 
-			_concurrentQueue = new ConcurrentQueue<FileInformation>();
+			_concurrentQueue = new ObservableCollection<FileInformation>();
 
 			ProgressValue = 0;
 
@@ -170,36 +180,59 @@ namespace HashCalculator.ViewModels
 
 			openFileDialog.ShowDialog();
 		}
-		private Task CollectInformation(string filePath, HashAlgorithm hashAlgorithm, CancellationToken cancellationToken)
+		private Task CollectInformation(FileInformation info, CancellationToken cancellationToken)
 		{
 			var task = Task.Run(() =>
 			{
-				var info = new FileInformation();
-
-				using (var stream = File.OpenRead(filePath))
+				Application.Current.Dispatcher.Invoke(() =>
 				{
-					info.Path = filePath;
+					//var info = new FileInformation();
 
-					info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
+					//using (var stream = File.OpenRead(filePath))
+					//{
+					//	info.Path = filePath;
 
-					info.Length = stream.Length;
+					//	info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
 
-					_concurrentQueue.Enqueue(info);
-				}
+					//	info.Length = stream.Length;
+
+						_concurrentQueue.Add(info);
+					//}
+				});
 			}, cancellationToken);
 
 			return task;
 		}
+		private FileInformation GetFileInfo(Stream stream, string filePath)
+		{
+			var info = new FileInformation();
 
-		private Task InputOfResultsIntoTheControl(CancellationToken cancellationToken)
+			using (var hashAlgorithm = MD5.Create())
+			{
+				info.Path = filePath;
+
+				info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
+
+				info.Length = stream.Length;
+
+				stream.Close();
+
+				hashAlgorithm.Clear();
+			}
+
+			return info;
+		}
+		private Task InputOfResultsIntoTheControl(FileInformation file, CancellationToken cancellationToken)
 		{
 			var task = Task.Run(() =>
 			{
-				if (_concurrentQueue.Count != 0)
-				{
+					_concurrentQueue.Add(file);
+
 					FilesInfo = _concurrentQueue.ToList();
-				}
+
+					ProgressValue++;
 			}, cancellationToken);
+
 
 			return task;
 		}
