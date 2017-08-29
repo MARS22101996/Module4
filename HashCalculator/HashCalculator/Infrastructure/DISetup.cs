@@ -12,9 +12,9 @@ namespace HashCalculator.Infrastructure
         {
             var builder = new ContainerBuilder();
 
-			builder.RegisterType<CalculatorService>().As<ICalculatorService>().InstancePerLifetimeScope();
+            builder.RegisterType<CalculatorService>().As<ICalculatorService>().InstancePerLifetimeScope();
 
-			Container = builder.Build();
+            Container = builder.Build();
         }
     }
 }

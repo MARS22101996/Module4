@@ -6,26 +6,26 @@ using HashCalculator.BLL.Models;
 
 namespace HashCalculator.BLL.Interfaces
 {
-	public interface ICalculatorService
-	{
-		ObservableCollection<FileInformation> Files { get; }
+    public interface ICalculatorService
+    {
+        ObservableCollection<FileInformation> Files { get; }
 
-		CancellationTokenSource CancelToken { get; }
+        CancellationTokenSource CancelToken { get; }
 
-		void RestoreToken();
+        void RestoreToken();
 
-		FileInformation GetFileInfo(Stream stream, string filePath);
+        FileInformation GetFileInfo(Stream stream, string filePath);
 
-		void RecordResultsInAnXmlFile(CancellationToken cancellationToken);
+        void RecordResultsInAnXmlFile(CancellationToken cancellationToken);
 
-		void HandleExceptionsIfExists(Task task);
+        void HandleExceptionsIfExists(Task task);
 
-		void ClearXml();
+        void ClearXml();
 
-		void Cancel();
+        void Cancel();
 
-		void AddFile(FileInformation file);
+        void AddFile(FileInformation file);
 
-		void ResetCollection();
-	}
+        void ResetCollection();
+    }
 }
