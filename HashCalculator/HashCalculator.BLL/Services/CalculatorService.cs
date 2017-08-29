@@ -50,11 +50,13 @@ namespace HashCalculator.BLL.Services
 			{
 				using (var hashAlgorithm = MD5.Create())
 				{
-					info.Path = filePath;
+					info.Path = Path.GetDirectoryName(filePath);
 
 					info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
 
 					info.Length = stream.Length;
+
+					info.Name = Path.GetFileName(filePath);
 
 					stream.Close();
 

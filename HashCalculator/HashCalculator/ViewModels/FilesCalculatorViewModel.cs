@@ -25,11 +25,6 @@ namespace HashCalculator.ViewModels
 
 		private List<FileInformation> _filesInfo;
 
-
-		private readonly object _lockObject = new object();
-
-		private const string XmlFileName = "\\SerializationOverview.xml";
-
 		private CalculatorService _calculatorService;
 
 		public List<FileInformation> FilesInfo

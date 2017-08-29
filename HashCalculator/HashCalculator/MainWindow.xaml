@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HashCalculator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1000">
+        Title="MainWindow" Height="800" Width="1050">
     <Grid>
-        <Button x:Name="buttonScan" Content="Choose directory" HorizontalAlignment="Center"  Margin="248,32,544,0" VerticalAlignment="Top" Width="200" Height="50" Command="{Binding Path=CalculateCommand}"/>
-        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Height="590" Width="900" CanUserAddRows="False" ColumnWidth="300" ItemsSource="{Binding Path=FilesInfo, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="True"/>
-        <ProgressBar x:Name="calculateProgress" HorizontalAlignment="Left" Height="28" Margin="10,113,0,0" VerticalAlignment="Top" Width="949"  Maximum="{Binding Path=ProgressMax, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Path=ProgressValue, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-        <Button x:Name="buttonCancel" Content="Cancel" HorizontalAlignment="Center" Margin="494,32,298,0" VerticalAlignment="Top" Width="200" Height="50" Command="{Binding Path=CancelCommand}"/>
+        <Button x:Name="buttonScan" Content="Choose directory" HorizontalAlignment="Center"  Margin="279,32,563,0" VerticalAlignment="Top" Width="200" Height="50" Command="{Binding Path=CalculateCommand}"/>
+        <DataGrid x:Name="dataGrid" HorizontalAlignment="Left" Margin="120,169,0,0" VerticalAlignment="Top" Height="550" Width="800" CanUserAddRows="False" ColumnWidth="200" ItemsSource="{Binding Path=FilesInfo, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" AutoGenerateColumns="True"/>
+        <ProgressBar x:Name="calculateProgress" HorizontalAlignment="Left" Height="28" Margin="120,113,0,0" VerticalAlignment="Top" Width="800"  Maximum="{Binding Path=ProgressMax, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}" Value="{Binding Path=ProgressValue, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+        <Button x:Name="buttonCancel" Content="Cancel" HorizontalAlignment="Center" Margin="553,32,289,0" VerticalAlignment="Top" Width="200" Height="50" Command="{Binding Path=CancelCommand}"/>
     </Grid>
 </Window>
