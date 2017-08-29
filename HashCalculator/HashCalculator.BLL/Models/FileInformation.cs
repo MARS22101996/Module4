@@ -1,4 +1,4 @@
-﻿namespace HashCalculator.Models
+﻿namespace HashCalculator.BLL.Models
 {
     public class FileInformation
     {
