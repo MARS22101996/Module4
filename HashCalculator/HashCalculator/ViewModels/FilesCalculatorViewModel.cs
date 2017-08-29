@@ -8,9 +8,12 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using Autofac;
+using HashCalculator.BLL.Interfaces;
 using HashCalculator.BLL.Models;
 using HashCalculator.BLL.Services;
 using HashCalculator.Commands;
+using HashCalculator.Infrastructure;
 using Microsoft.WindowsAPICodePack.Dialogs;
 
 namespace HashCalculator.ViewModels
@@ -25,7 +28,7 @@ namespace HashCalculator.ViewModels
 
 		private List<FileInformation> _filesInfo;
 
-		private CalculatorService _calculatorService;
+		private ICalculatorService _calculatorService;
 
 		public List<FileInformation> FilesInfo
 		{
@@ -82,9 +85,11 @@ namespace HashCalculator.ViewModels
 
 		public FilesCalculatorViewModel()
 		{
+			DiSetup.Initialize();
+
 			FilesInfo = new List<FileInformation>();
 
-			_calculatorService = new CalculatorService();
+			_calculatorService = DiSetup.Container.Resolve<ICalculatorService>(); ;
 		}
 
 		private void ConfigureFileInfo(string path)
