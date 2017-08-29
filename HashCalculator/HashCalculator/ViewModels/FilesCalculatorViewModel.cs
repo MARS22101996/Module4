@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -12,7 +11,6 @@ using System.Xml.Serialization;
 using HashCalculator.Models;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Windows;
 using System.Windows.Input;
 using HashCalculator.Commands;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -33,6 +31,8 @@ namespace HashCalculator.ViewModels
 
 		private CancellationTokenSource _cancellationTokenSource;
 
+		private readonly object _lockObject = new object();
+
 		private const string XmlFileName = "\\SerializationOverview.xml";
 
 		public List<FileInformation> FilesInfo
@@ -46,6 +46,7 @@ namespace HashCalculator.ViewModels
 		}
 
 		private int _progressValue;
+
 		public int ProgressValue
 		{
 			get { return _progressValue; }
@@ -60,6 +61,7 @@ namespace HashCalculator.ViewModels
 		}
 
 		private int _progressMax = 100;
+
 		public int ProgressMax
 		{
 			get { return _progressMax; }
@@ -85,10 +87,7 @@ namespace HashCalculator.ViewModels
 			}
 		}));
 
-		public ICommand CancelCommand => _cancelCommand ?? (_cancelCommand = new Command(parameter =>
-		{
-			Cancel();
-		}));
+		public ICommand CancelCommand => _cancelCommand ?? (_cancelCommand = new Command(parameter => { Cancel(); }));
 
 
 		public FilesCalculatorViewModel()
@@ -113,43 +112,21 @@ namespace HashCalculator.ViewModels
 
 			_filePaths = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToArray();
 
-			var i = _filePaths.Last();
-
 			ProgressMax = _filePaths.Length;
 
-			//var tasks = new List<Task>();
-
-			//using (var md5 = MD5.Create())
-			//{
-				foreach (var filePath in _filePaths)
+			foreach (var filePath in _filePaths)
+			{
+				using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
 				{
-					using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-					{
-						var info = GetFileInfo(stream, filePath);
+					var info = GetFileInfo(stream, filePath);
 
-					//CollectInformation(filePath, md5, _cancellationTokenSource.Token);
 					InputOfResultsIntoTheControl(info, _cancellationTokenSource.Token);
 
 					RecordResultsInAnXmlFile(_cancellationTokenSource.Token);
 
-					Task.Run(() => ProgressValue++, _cancellationTokenSource.Token);
+					WriteToTheProgressBar(_cancellationTokenSource.Token);
 				}
-
-
-					//Task.WaitAll(tasks.ToArray());
-
-					//tasks.Clear();
-
-					
-				}
-
-				//tasks.Add(RecordResultsInAnXmlFile(_cancellationTokenSource.Token));
-
-				//tasks.Add(InputOfResultsIntoTheControl(_cancellationTokenSource.Token));
-
-				//Task.WaitAll(tasks.ToArray());
-			//}
-
+			}
 		}
 
 		private void ConfigureStartData()
@@ -159,8 +136,8 @@ namespace HashCalculator.ViewModels
 			_concurrentQueue = new ObservableCollection<FileInformation>();
 
 			ProgressValue = 0;
-
 		}
+
 		private string OpenFileDialog()
 		{
 			var openFileDialog = new CommonOpenFileDialog();
@@ -180,29 +157,7 @@ namespace HashCalculator.ViewModels
 
 			openFileDialog.ShowDialog();
 		}
-		private Task CollectInformation(FileInformation info, CancellationToken cancellationToken)
-		{
-			var task = Task.Run(() =>
-			{
-				Application.Current.Dispatcher.Invoke(() =>
-				{
-					//var info = new FileInformation();
 
-					//using (var stream = File.OpenRead(filePath))
-					//{
-					//	info.Path = filePath;
-
-					//	info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
-
-					//	info.Length = stream.Length;
-
-						_concurrentQueue.Add(info);
-					//}
-				});
-			}, cancellationToken);
-
-			return task;
-		}
 		private FileInformation GetFileInfo(Stream stream, string filePath)
 		{
 			var info = new FileInformation();
@@ -222,15 +177,14 @@ namespace HashCalculator.ViewModels
 
 			return info;
 		}
+
 		private Task InputOfResultsIntoTheControl(FileInformation file, CancellationToken cancellationToken)
 		{
 			var task = Task.Run(() =>
 			{
-					_concurrentQueue.Add(file);
+				_concurrentQueue.Add(file);
 
-					FilesInfo = _concurrentQueue.ToList();
-
-					ProgressValue++;
+				FilesInfo = _concurrentQueue.ToList();
 			}, cancellationToken);
 
 
@@ -248,16 +202,25 @@ namespace HashCalculator.ViewModels
 
 		private Task Serialize(string path, CancellationToken cancellationToken)
 		{
-
 			var writer = new XmlSerializer(typeof(List<FileInformation>));
 
 			var task = Task.Run(() =>
 			{
-				using (var file = new StreamWriter(path))
+				lock (_lockObject)
 				{
-					writer.Serialize(file, _concurrentQueue.ToList());
+					using (var file = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+					{
+						writer.Serialize(file, _concurrentQueue.ToList());
+					}
 				}
 			}, cancellationToken);
+
+			return task;
+		}
+
+		private Task WriteToTheProgressBar(CancellationToken cancellationToken)
+		{
+			var task = Task.Run(() => ProgressValue++, cancellationToken);
 
 			return task;
 		}
