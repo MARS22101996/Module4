@@ -46,23 +46,30 @@ namespace HashCalculator.BLL.Services
 		{
 			var info = new FileInformation();
 
-			using (var hashAlgorithm = MD5.Create())
+			try
 			{
-				info.Path = filePath;
+				using (var hashAlgorithm = MD5.Create())
+				{
+					info.Path = filePath;
 
-				info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
+					info.Hash = Encoding.Default.GetString(hashAlgorithm.ComputeHash(stream));
 
-				info.Length = stream.Length;
+					info.Length = stream.Length;
 
-				stream.Close();
+					stream.Close();
 
-				hashAlgorithm.Clear();
+					hashAlgorithm.Clear();
+				}
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"An error ocurred while executing the generating of hash: {e.Message}", e);
 			}
 
 			return info;
 		}
 
-		
+
 		public void RecordResultsInAnXmlFile(CancellationToken cancellationToken)
 		{
 			var writer = new XmlSerializer(typeof(List<FileInformation>));
@@ -71,16 +78,30 @@ namespace HashCalculator.BLL.Services
 
 			var path = folder + XmlFileName;
 
-			Task.Run(() =>
+			var task = Task.Run(() =>
 			{
 				lock (_lockObject)
 				{
-					using (var file = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+					try
 					{
-						writer.Serialize(file, _filesCollection.ToList());
+						using (var file = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+						{
+							writer.Serialize(file, _filesCollection.ToList());
+						}
+					}
+					catch (Exception e)
+					{
+						throw new Exception($"An error ocurred while executing the data writing to the file: {e.Message}", e);
 					}
 				}
 			}, cancellationToken);
+
+			HandleExceptionsIfExists(task);
+		}
+
+		public void HandleExceptionsIfExists(Task task)
+		{
+			task.ContinueWith(t => t.Exception?.Flatten(), TaskContinuationOptions.OnlyOnFaulted);
 		}
 
 
@@ -91,10 +112,18 @@ namespace HashCalculator.BLL.Services
 			var path = folder + XmlFileName;
 
 			var serializer = new XmlSerializer(typeof(List<FileInformation>));
-			using (var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+
+			try
 			{
-				stream.SetLength(0);
-				serializer.Serialize(stream, new List<FileInformation>());
+				using (var stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+				{
+					stream.SetLength(0);
+					serializer.Serialize(stream, new List<FileInformation>());
+				}
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"An error ocurred while executing the data clearing in the file: {e.Message}", e);
 			}
 		}
 
@@ -112,6 +141,5 @@ namespace HashCalculator.BLL.Services
 		{
 			_filesCollection = new ObservableCollection<FileInformation>();
 		}
-
 	}
 }

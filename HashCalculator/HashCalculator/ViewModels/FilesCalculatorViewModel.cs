@@ -106,16 +106,24 @@ namespace HashCalculator.ViewModels
 
 			foreach (var filePath in _filePaths)
 			{
-				using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+				try
 				{
-					var info = _calculatorService.GetFileInfo(stream, filePath);
+					using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+					{
+						var info = _calculatorService.GetFileInfo(stream, filePath);
 
-					 InputOfResultsIntoTheControl(info, _calculatorService.CancelToken.Token);
+						InputOfResultsIntoTheControl(info, _calculatorService.CancelToken.Token);
 
-					 _calculatorService.RecordResultsInAnXmlFile(_calculatorService.CancelToken.Token);
+						_calculatorService.RecordResultsInAnXmlFile(_calculatorService.CancelToken.Token);
 
-					 WriteToTheProgressBar(_calculatorService.CancelToken.Token);
+						WriteToTheProgressBar(_calculatorService.CancelToken.Token);
+					}
 				}
+				catch (Exception e)
+				{
+					throw new Exception($"An error ocurred while executing the data reading from file: {e.Message}", e);
+				}
+
 			}
 		}
 
@@ -150,19 +158,23 @@ namespace HashCalculator.ViewModels
 
 		private void InputOfResultsIntoTheControl(FileInformation file, CancellationToken cancellationToken)
 		{
-			Task.Run(() =>
+			var task = Task.Run(() =>
 			{
 				_calculatorService.AddFile(file);
 
 				FilesInfo = _calculatorService.Files.ToList();
 
 			}, cancellationToken);
+
+			_calculatorService.HandleExceptionsIfExists(task);
 		}
 
 		private void WriteToTheProgressBar(CancellationToken cancellationToken)
 		{
-			Task.Run(() => Application.Current.Dispatcher.Invoke(() =>
+			var task = Task.Run(() => Application.Current.Dispatcher.Invoke(() =>
 				ProgressValue++), cancellationToken);
+
+			_calculatorService.HandleExceptionsIfExists(task);
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
