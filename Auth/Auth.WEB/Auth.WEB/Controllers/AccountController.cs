@@ -1,0 +1,86 @@
+﻿using System;
+using System.Threading.Tasks;
+using Auth.WEB.Infrastructure.Authorization;
+using Auth.WEB.Models;
+using Auth.WEB.RequestSettings;
+using Auth.WEB.ViewModels.AccountViewModel;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Auth.WEB.Controllers
+{
+    public class AccountController : BaseController
+    {
+		//private readonly ICommunicationService _communicationService;
+		private readonly RequestService _communicationService;
+		private const string CookieTokenKeyName = "token";
+
+        public AccountController()
+        {
+            _communicationService = new RequestService();
+        }
+
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await SetTokenCookie(model.Email, model.Password);
+
+	        var i = User.GetUserName();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await _communicationService.PostAsync("register", model, FormHeaders(JsonType), "userapi");
+            await SetTokenCookie(model.Email, model.Password);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult LogOff()
+        {
+            Response.Cookies.Delete(CookieTokenKeyName);
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        private async Task SetTokenCookie(string email, string password)
+        {
+            var body = $"username={email}&password={password}";
+            var token = await _communicationService.PostAsync<TokenApiModel, string>("token", body, FormHeaders(FormType));
+
+            Response.Cookies.Append(CookieTokenKeyName, token.Token, new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(token.ExpiresIn)
+            });
+        }
+    }
+}
