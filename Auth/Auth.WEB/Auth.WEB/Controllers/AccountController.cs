@@ -15,8 +15,9 @@ namespace Auth.WEB.Controllers
 		//private readonly ICommunicationService _communicationService;
 		private readonly RequestService _communicationService;
 		private const string CookieTokenKeyName = "token";
+		//private const string CookieTokenKeyName = "access_token";
 
-        public AccountController()
+		public AccountController()
         {
             _communicationService = new RequestService();
         }
@@ -38,8 +39,6 @@ namespace Auth.WEB.Controllers
 
             await SetTokenCookie(model.Email, model.Password);
 
-	        var i = User.GetUserName();
-
             return RedirectToAction("Index", "Home");
         }
 
@@ -57,8 +56,12 @@ namespace Auth.WEB.Controllers
                 return View(model);
             }
 
-            await _communicationService.PostAsync("register", model, FormHeaders(JsonType), "userapi");
+            await _communicationService.PostAsync("api/Account/register", model, FormHeaders(JsonType), "userapi");
             await SetTokenCookie(model.Email, model.Password);
+
+	        //var a = User.GetUserName();
+
+			var i = User.Identity.Name;
 
             return RedirectToAction("Index", "Home");
         }
@@ -74,13 +77,20 @@ namespace Auth.WEB.Controllers
 
         private async Task SetTokenCookie(string email, string password)
         {
-            var body = $"username={email}&password={password}";
-            var token = await _communicationService.PostAsync<TokenApiModel, string>("token", body, FormHeaders(FormType));
+			//var body = $"username={email}&password={password}";
+			var body = $"grant_type=password&username={email}&password={password}";
 
-            Response.Cookies.Append(CookieTokenKeyName, token.Token, new CookieOptions
-            {
-                Expires = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(token.ExpiresIn)
-            });
-        }
+			var token = await _communicationService.PostAsync<TokenApiModel, string>("token", body, FormHeaders(FormType));
+
+			//Response.Cookies.Append(CookieTokenKeyName, token.Token, new CookieOptions
+			//{
+			//    Expires = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(token.ExpiresIn)
+			//});
+
+			Response.Cookies.Append(CookieTokenKeyName, token.access_token, new CookieOptions
+			{
+				Expires = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(token.expires_in)
+			});
+		}
     }
 }

@@ -14,8 +14,8 @@ namespace Auth.WEB.ViewModels.AccountViewModel
 
         [Required]
         [DataType(DataType.Password)]
-        [RegularExpression(@"(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{8,20})$",
-            ErrorMessage = "Password has to contain at least 1 letter and 1 digit. Required length: 8 - 20")]
+        //[RegularExpression(@"(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{8,20})$",
+        //    ErrorMessage = "Password has to contain at least 1 letter and 1 digit. Required length: 8 - 20")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]

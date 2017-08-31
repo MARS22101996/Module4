@@ -68,12 +68,18 @@ namespace Auth.WEB
 			app.UseAuthorizationMiddleware();
 			app.UseStaticFiles();
 
-			app.UseJwtBearerAuthentication(new JwtBearerOptions
-			{
-				AutomaticAuthenticate = true,
-				AutomaticChallenge = true,
-				TokenValidationParameters = tokenValidationOptions.Value
-			});
+			//TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+			//{
+			//	NameClaimType = JwtClaimTypes.Name,
+			//	RoleClaimType = JwtClaimTypes.Role,
+			//},
+			//app.UseJwtBearerAuthentication(new JwtBearerOptions
+			//{
+			//	AutomaticAuthenticate = true,
+			//	AutomaticChallenge = true,
+			//	TokenValidationParameters = tokenValidationOptions.Value
+			//});
+
 
 			app.UseStaticFiles();
 

@@ -16,7 +16,10 @@ namespace Auth.WEB.Infrastructure.Authorization
 
         public async Task Invoke(HttpContext context)
         {
-            context.Request.Headers["Authorization"] = $"Bearer {context.Request.Cookies[CookieTokenKeyName]}";
+
+			context.Request.Headers["Authorization"] = $"Bearer {context.Request.Cookies[CookieTokenKeyName]}";
+
+
             await _next.Invoke(context);
         }
     }

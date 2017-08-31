@@ -6,7 +6,8 @@ namespace Auth.WEB.Infrastructure.Authorization
     {
         public static IApplicationBuilder UseAuthorizationMiddleware(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<AuthorizationMiddleware>();
-        }
+			//return builder.UseMiddleware<AuthorizationMiddleware>();
+			return builder.UseMiddleware<AuthorizationMiddleware>();
+		}
     }
 }

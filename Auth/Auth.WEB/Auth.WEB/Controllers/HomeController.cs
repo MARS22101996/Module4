@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Auth.WEB.Infrastructure.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.WEB.Controllers
 {
@@ -12,6 +13,8 @@ namespace Auth.WEB.Controllers
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
+
+	        var i = User.GetUserName();
 
             return View();
         }

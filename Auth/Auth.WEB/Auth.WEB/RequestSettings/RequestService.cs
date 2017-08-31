@@ -22,7 +22,10 @@ namespace Auth.WEB.RequestSettings
 			string urlPrefix = "default")
 		{
 			string responseText;
-			var requestUrl = "http://localhost:5000/UserService/" + requestPath;
+
+			var requestUrl = "http://localhost:54027/" + requestPath;
+
+			//var requestUrl = "http://localhost:5000/UserService/" + requestPath;
 
 			try
 			{
@@ -47,7 +50,9 @@ namespace Auth.WEB.RequestSettings
 		   string urlPrefix = "default")
 		{
 			string responseText;
-			var requestUrl = "http://localhost:5000/UserService/api/" + requestPath;
+
+			var requestUrl = "http://localhost:54027/" + requestPath;
+			//var requestUrl = "http://localhost:5000/UserService/api/" + requestPath;
 
 			try
 			{

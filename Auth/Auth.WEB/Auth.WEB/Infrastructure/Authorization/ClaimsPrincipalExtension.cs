@@ -14,6 +14,8 @@ namespace Auth.WEB.Infrastructure.Authorization
         {
 			var i = claimsPrincipal.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
 
+			var test = claimsPrincipal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name");
+
 			return claimsPrincipal.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
         }
     }
