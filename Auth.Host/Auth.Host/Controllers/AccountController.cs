@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
+using Auth.Host.Manager;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -26,16 +25,18 @@ namespace Auth.Host.Controllers
     {
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
+		private ApplicationRoleManager _roleManager;
 
-        public AccountController()
+		public AccountController()
         {
         }
 
         public AccountController(ApplicationUserManager userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
+            ISecureDataFormat<AuthenticationTicket> accessTokenFormat, ApplicationRoleManager roleManager)
         {
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
+	        RoleManager= roleManager;
         }
 
         public ApplicationUserManager UserManager
@@ -50,10 +51,22 @@ namespace Auth.Host.Controllers
             }
         }
 
-        public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
+		public ApplicationRoleManager RoleManager
+		{
+			get
+			{
+				return _roleManager ?? Request.GetOwinContext().GetUserManager<ApplicationRoleManager>();
+			}
+			private set
+			{
+				_roleManager = value;
+			}
+		}
+
+		public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
         // GET api/Account/UserInfo
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
+        //[HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfo")]
         public UserInfoViewModel GetUserInfo()
         {
@@ -66,6 +79,32 @@ namespace Auth.Host.Controllers
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
             };
         }
+
+		
+		[HttpGet]
+		[AllowAnonymous]
+		[Route("User")]
+		public async Task<UserModel> GetUserByName()
+		{
+			var userModel = new UserModel();
+			var userRoles = new List<string>();
+
+			var user = await UserManager.FindByNameAsync("test2@mail.ru");
+
+		    foreach (var role in user.Roles)
+		    {
+				var roleName = RoleManager.FindById(role.RoleId).Name;
+				userRoles.Add(roleName);
+		    }
+
+			userModel.Name = user.UserName;
+
+			userModel.Email = user.Email;
+
+			userModel.Role = userRoles;
+
+			return userModel;
+	    }
 
         // POST api/Account/Logout
         [Route("Logout")]

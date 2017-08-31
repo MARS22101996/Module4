@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace Auth.Host.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class ValuesController : ApiController
     {
         // GET api/values
@@ -17,6 +17,7 @@ namespace Auth.Host.Controllers
         }
 
         // GET api/values/5
+		[Route("value")]
         public string Get(int id)
         {
             return "value";
